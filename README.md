@@ -40,6 +40,10 @@ handling; components default to plain-ASCII measurement otherwise.
 | `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. |
 | `Toast` | A single auto-dismissing message (or wrapped Component). |
 | `NotificationQueue` | A capped, auto-expiring queue of leveled (info/success/warning/error) notifications. |
+| `ScrollView` | Wraps a child in a fixed-height, vertically scrollable viewport with an optional scrollbar. |
+| `SplitPane` | Two children side by side, separated by a border, split by a ratio. |
+| `Collapsible` | A toggleable header that shows/hides a wrapped child. |
+| `CollapsibleText` | A collapsible block for long text, showing the first N lines behind a toggle. |
 
 ## License
 

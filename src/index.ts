@@ -5,3 +5,7 @@ export { ProgressBar, type ProgressBarOptions } from "./components/progress-bar.
 export { Dialog, type DialogAction, type DialogOptions, type DialogTheme } from "./components/dialog.js";
 export { Toast, type ToastOptions, type ToastScheduler, type ToastTheme } from "./components/toast.js";
 export { NotificationQueue, type NotificationEntry, type NotificationOptions } from "./components/notification.js";
+export { ScrollView, type ScrollViewOptions } from "./components/scroll-view.js";
+export { SplitPane, type SplitPaneOptions } from "./components/split-pane.js";
+export { Collapsible, type CollapsibleOptions } from "./components/collapsible.js";
+export { CollapsibleText, type CollapsibleTextOptions } from "./components/collapsible-text.js";
