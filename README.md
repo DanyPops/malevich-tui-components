@@ -36,6 +36,10 @@ handling; components default to plain-ASCII measurement otherwise.
 | Component | Description |
 |---|---|
 | `Table` | Tabular data with auto-sized or fixed column widths, alignment, and a header separator. |
+| `ProgressBar` | A single-line `label filled/empty-bar pct%` meter. |
+| `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. |
+| `Toast` | A single auto-dismissing message (or wrapped Component). |
+| `NotificationQueue` | A capped, auto-expiring queue of leveled (info/success/warning/error) notifications. |
 
 ## License
 

@@ -9,12 +9,15 @@
  * itself declares no dependency on it (or on @dpopsuev/alef-tui) at all.
  */
 import type { Component as PiComponent } from "@earendil-works/pi-tui";
-import { ProgressBar, Table } from "../src/index.ts";
+import { Dialog, NotificationQueue, ProgressBar, Table, Toast } from "../src/index.ts";
 
 const table = new Table({ columns: [{ header: "Engine", key: "engine" }], rows: [] });
 const progressBar = new ProgressBar({ value: 0 });
+const dialog = new Dialog({ title: "t", body: "b", actions: [], theme: { border: (s) => s, title: (s) => s, body: (s) => s, dim: (s) => s } });
+const toast = new Toast({ message: "m", theme: { text: (s) => s, dim: (s) => s }, durationMs: -1 });
+const notifications = new NotificationQueue();
 
 // If a component's shape ever drifts from pi-tui's own Component interface,
 // one of these assignments stops compiling -- the whole point of this file.
-const componentsToCheck: PiComponent[] = [table, progressBar];
+const componentsToCheck: PiComponent[] = [table, progressBar, dialog, toast, notifications];
 void componentsToCheck;
