@@ -46,6 +46,9 @@ handling; components default to plain-ASCII measurement otherwise.
 | `CollapsibleText` | A collapsible block for long text, showing the first N lines behind a toggle. |
 | `TreeView` | A labeled tree with box-drawing connectors; nodes may embed a child Component and/or nested children. |
 | `Menu` | A bordered, keyboard-navigable action list with per-item shortcut keys. |
+| `Badge` | A single-line `label: count` indicator, abbreviating large counts (1.5k, 2.0M). |
+| `SeparatorLine` | A full-width rule with optional embedded left/right labels. |
+| `Envelope` | A bordered, collapsible box with the title embedded in the top border. |
 
 ## License
 

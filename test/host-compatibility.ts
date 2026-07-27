@@ -9,7 +9,7 @@
  * itself declares no dependency on it (or on @dpopsuev/alef-tui) at all.
  */
 import type { Component as PiComponent } from "@earendil-works/pi-tui";
-import { Collapsible, CollapsibleText, Dialog, Menu, NotificationQueue, ProgressBar, ScrollView, SplitPane, Table, Toast, TreeView } from "../src/index.ts";
+import { Badge, Collapsible, CollapsibleText, Dialog, Envelope, Menu, NotificationQueue, ProgressBar, ScrollView, SeparatorLine, SplitPane, Table, Toast, TreeView } from "../src/index.ts";
 
 const table = new Table({ columns: [{ header: "Engine", key: "engine" }], rows: [] });
 const progressBar = new ProgressBar({ value: 0 });
@@ -22,8 +22,11 @@ const collapsible = new Collapsible({ header: "h" });
 const collapsibleText = new CollapsibleText({ text: "t" });
 const treeView = new TreeView({ nodes: [] });
 const menu = new Menu({ items: [], theme: { border: (s) => s, selected: (s) => s, normal: (s) => s, dim: (s) => s, title: (s) => s } });
+const badge = new Badge();
+const separatorLine = new SeparatorLine();
+const envelope = new Envelope({ title: "t" });
 
 // If a component's shape ever drifts from pi-tui's own Component interface,
 // one of these assignments stops compiling -- the whole point of this file.
-const componentsToCheck: PiComponent[] = [table, progressBar, dialog, toast, notifications, scrollView, splitPane, collapsible, collapsibleText, treeView, menu];
+const componentsToCheck: PiComponent[] = [table, progressBar, dialog, toast, notifications, scrollView, splitPane, collapsible, collapsibleText, treeView, menu, badge, separatorLine, envelope];
 void componentsToCheck;

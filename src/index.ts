@@ -12,3 +12,6 @@ export { CollapsibleText, type CollapsibleTextOptions } from "./components/colla
 export { legacyKeyMatcher, type KeyMatcher } from "./key-matcher.js";
 export { TreeView, type TreeNode, type TreeViewOptions } from "./components/tree-view.js";
 export { Menu, type MenuItem, type MenuOptions, type MenuTheme } from "./components/menu.js";
+export { Badge, formatBadgeCount, type BadgeOptions } from "./components/badge.js";
+export { SeparatorLine, type SeparatorLineOptions, type SeparatorWeight } from "./components/separator-line.js";
+export { Envelope, type EnvelopeOptions } from "./components/envelope.js";
