@@ -1,11 +1,9 @@
 /**
- * Generalized from @danypops/enigma's own ApiKeyRegistrationForm
- * (extension/src/apikey-form.ts, a fixed 3-field name/envVar/value form)
- * into an N-field form keyed by a Record result. `matchesKey`'s direct
- * import is replaced by an injected KeyMatcher port. Deliberately does not
- * own a plain-text input implementation -- a host passes its own real
- * Input component (or Malevich's MaskedInput) per field; this owns only
- * focus navigation, validation, and layout.
+ * Generalized from @danypops/enigma's ApiKeyRegistrationForm (a fixed
+ * 3-field form) into an N-field form keyed by a Record result. Owns no
+ * text-input implementation -- a host passes its own Input (or
+ * Malevich's MaskedInput) per field; this owns focus navigation,
+ * validation, and layout only.
  */
 import type { Component } from "../component.js";
 import { legacyKeyMatcher, type KeyMatcher } from "../key-matcher.js";

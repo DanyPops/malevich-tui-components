@@ -1,11 +1,8 @@
 /**
- * Generalized from @danypops/enigma's own MaskedInput (extension/src/
- * apikey-form.ts) -- built there to solve a real, shipped problem: a
- * secret typed or pasted into a Pi `/secrets` form must never appear in
- * the visible terminal transcript. `matchesKey`'s direct import is
- * replaced by an injected KeyMatcher port; behavior (including the
- * bracketed-paste handling, added after a real bug report of Ctrl+V
- * silently dropping the pasted value) is otherwise unchanged.
+ * Generalized from @danypops/enigma's MaskedInput (extension/src/
+ * apikey-form.ts). Renders only mask glyphs so a typed/pasted secret
+ * never reaches the visible transcript; includes bracketed-paste
+ * handling so a terminal paste isn't silently dropped.
  */
 import type { Component } from "../component.js";
 import { legacyKeyMatcher, type KeyMatcher } from "../key-matcher.js";

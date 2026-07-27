@@ -1,18 +1,8 @@
 /**
- * New component, not an extraction: formalizes a scaffold found
- * independently hand-rolled in five separate real codebases (Enigma's
- * pickFromList, Jittor's panels, pi-tickets' tui.ts, packed's tui.ts,
- * pipes' pipes-tui.ts) -- a Container + DynamicBorder + Text(title) +
- * SelectList + Text(help) + DynamicBorder scaffold, matching Pi's own TUI
- * docs' "Pattern 1: Selection Dialog" example almost verbatim.
- *
- * Deliberately owns none of the list-selection logic (filtering,
- * scrolling, keyboard navigation) -- that's real, actively-maintained
- * complexity both pi-tui and alef-tui already ship natively as their own
- * SelectList. This wraps whatever inner Component the host constructs
- * (its own real SelectList, already wired with items/onSelect/onCancel)
- * in the repeated border/title/help chrome, and delegates handleInput/
- * invalidate straight through.
+ * Formalizes a border+title+list+help scaffold hand-rolled independently
+ * in five codebases (Enigma, Jittor, pi-tickets, packed, pipes). Owns no
+ * list-selection logic -- wraps a host-provided list Component (the
+ * host's own SelectList) and delegates handleInput/invalidate to it.
  */
 import type { Component } from "../component.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";

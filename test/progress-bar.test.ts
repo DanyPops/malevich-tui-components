@@ -13,9 +13,8 @@ describe("ProgressBar", () => {
 	});
 
 	it("format() treats opts.width as the bar's own character count directly, distinct from render()'s total-line width", () => {
-		// This is a real, faithfully-ported quirk from the source component: opts.width
-		// means "bar glyph count" in format(), but "total available line width" in
-		// render() (label + bar + pct text share that budget there).
+		// opts.width means "bar glyph count" in format(), but "total available
+		// line width" in render() (label + bar + pct text share that budget there).
 		const bar = new ProgressBar({ value: 1, max: 2, width: 10 });
 		expect(bar.format()).toBe(`${"█".repeat(5)}${"░".repeat(5)}`);
 	});

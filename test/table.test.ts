@@ -23,7 +23,7 @@ describe("Table", () => {
 		});
 		const [header] = table.render(80);
 		expect(header?.trimEnd()).toBe("X");
-		// Column width is derived from the longest cell, confirmed by the separator's length.
+		// Column width is derived from the longest cell -- check via the separator's length.
 		const [, separator] = table.render(80);
 		expect(separator).toBe("─".repeat("a-much-longer-value".length));
 	});

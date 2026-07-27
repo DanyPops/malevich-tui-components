@@ -1,11 +1,7 @@
 /**
- * The one interface every Malevich component implements. Deliberately
- * defined here rather than imported from any host package: this shape is
- * structurally identical to `@earendil-works/pi-tui`'s and
- * `@dpopsuev/alef-tui`'s own `Component` interface (verified directly
- * against both sources -- same author, same license, one a fork of the
- * other), so a Malevich component satisfies either host's type system with
- * zero adapter code. TypeScript structural typing does the rest.
+ * Structurally identical to `@earendil-works/pi-tui`'s and
+ * `@dpopsuev/alef-tui`'s own `Component` interface (one is a fork of the
+ * other) -- defined here so Malevich depends on neither package directly.
  */
 export interface Component {
 	/** Render the component to lines for the given viewport width. Each returned line must not exceed `width`. */
