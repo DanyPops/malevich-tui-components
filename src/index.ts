@@ -15,3 +15,4 @@ export { Menu, type MenuItem, type MenuOptions, type MenuTheme } from "./compone
 export { Badge, formatBadgeCount, type BadgeOptions } from "./components/badge.js";
 export { SeparatorLine, type SeparatorLineOptions, type SeparatorWeight } from "./components/separator-line.js";
 export { Envelope, type EnvelopeOptions } from "./components/envelope.js";
+export { BorderedSelectPanel, type BorderedSelectPanelOptions, type BorderedSelectPanelTheme } from "./components/bordered-select-panel.js";

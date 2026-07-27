@@ -49,6 +49,7 @@ handling; components default to plain-ASCII measurement otherwise.
 | `Badge` | A single-line `label: count` indicator, abbreviating large counts (1.5k, 2.0M). |
 | `SeparatorLine` | A full-width rule with optional embedded left/right labels. |
 | `Envelope` | A bordered, collapsible box with the title embedded in the top border. |
+| `BorderedSelectPanel` | Wraps a host-provided list Component (e.g. the host's own SelectList) in a border+title+help-text scaffold -- formalizes a pattern found hand-rolled in five separate real codebases. Owns no selection logic itself. |
 
 ## License
 
