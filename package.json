@@ -1,0 +1,32 @@
+{
+	"name": "@danypops/malevich",
+	"version": "0.1.0",
+	"description": "A terminal-UI component library: Table, forms, dialogs and more, built only against the Component/Focusable interface shape so it runs unmodified on any compatible TUI host (Pi's own pi-tui, Alef's alef-tui, or others).",
+	"type": "module",
+	"license": "MIT",
+	"keywords": ["tui", "terminal", "ui", "components", "cli"],
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"exports": {
+		".": {
+			"source": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"test": "bun test",
+		"check": "bun x tsc --noEmit",
+		"build": "bun x tsc -p tsconfig.build.json"
+	},
+	"devDependencies": {
+		"@earendil-works/pi-tui": "^0.82.1",
+		"@types/node": "^22.19.19",
+		"bun-types": "^1.3.14",
+		"typescript": "^5.9.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DanyPops/malevich.git"
+	}
+}
