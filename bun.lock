@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@danypops/malevich",
+      "name": "malevich-tui-components",
       "devDependencies": {
         "@earendil-works/pi-tui": "^0.82.1",
         "@types/node": "^22.19.19",

@@ -9,13 +9,13 @@ or [`@dpopsuev/alef-tui`](https://github.com/dpopsuev/alef).
 ## Install
 
 ```bash
-bun add @danypops/malevich
+bun add malevich-tui-components
 ```
 
 ## Usage
 
 ```ts
-import { Table } from "@danypops/malevich";
+import { Table } from "malevich-tui-components";
 
 const table = new Table({
   columns: [{ header: "Engine", key: "engine" }, { header: "Credits", key: "credits" }],
