@@ -50,6 +50,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `SeparatorLine` | A full-width rule with optional embedded left/right labels. |
 | `Envelope` | A bordered, collapsible box with the title embedded in the top border. |
 | `BorderedSelectPanel` | Wraps a host-provided list Component (e.g. the host's own SelectList) in a border+title+help-text scaffold -- formalizes a pattern found hand-rolled in five separate real codebases. Owns no selection logic itself. |
+| `MaskedInput` | A single-line input rendering only mask glyphs, with bracketed-paste handling. Generalized from a real, shipped Enigma component. |
+| `Form` | An N-field Tab/Shift+Tab-navigable form with required-field validation, keyed to a Record result. Composes with the host's own text inputs and Malevich's MaskedInput. |
 
 ## License
 

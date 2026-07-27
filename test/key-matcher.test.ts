@@ -9,6 +9,9 @@ describe("legacyKeyMatcher", () => {
 		expect(legacyKeyMatcher("\x1b[C", "right")).toBe(true);
 		expect(legacyKeyMatcher("\x1b", "escape")).toBe(true);
 		expect(legacyKeyMatcher("\t", "tab")).toBe(true);
+		expect(legacyKeyMatcher("\x7f", "backspace")).toBe(true);
+		expect(legacyKeyMatcher("\b", "backspace")).toBe(true);
+		expect(legacyKeyMatcher("\x1b[Z", "shift+tab")).toBe(true);
 	});
 
 	it("matches either \\r or \\n for enter", () => {

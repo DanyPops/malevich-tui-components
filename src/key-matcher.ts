@@ -18,6 +18,8 @@ const LEGACY_SEQUENCES: Record<string, string[]> = {
 	enter: ["\r", "\n"],
 	escape: ["\x1b"],
 	tab: ["\t"],
+	"shift+tab": ["\x1b[Z"],
+	backspace: ["\x7f", "\b"],
 };
 
 /**
