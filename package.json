@@ -27,6 +27,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/DanyPops/malevich.git"
+		"url": "git+https://github.com/DanyPops/malevich-tui-components.git"
 	}
 }
