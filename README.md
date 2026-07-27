@@ -44,6 +44,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `SplitPane` | Two children side by side, separated by a border, split by a ratio. |
 | `Collapsible` | A toggleable header that shows/hides a wrapped child. |
 | `CollapsibleText` | A collapsible block for long text, showing the first N lines behind a toggle. |
+| `TreeView` | A labeled tree with box-drawing connectors; nodes may embed a child Component and/or nested children. |
+| `Menu` | A bordered, keyboard-navigable action list with per-item shortcut keys. |
 
 ## License
 

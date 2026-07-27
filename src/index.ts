@@ -9,3 +9,6 @@ export { ScrollView, type ScrollViewOptions } from "./components/scroll-view.js"
 export { SplitPane, type SplitPaneOptions } from "./components/split-pane.js";
 export { Collapsible, type CollapsibleOptions } from "./components/collapsible.js";
 export { CollapsibleText, type CollapsibleTextOptions } from "./components/collapsible-text.js";
+export { legacyKeyMatcher, type KeyMatcher } from "./key-matcher.js";
+export { TreeView, type TreeNode, type TreeViewOptions } from "./components/tree-view.js";
+export { Menu, type MenuItem, type MenuOptions, type MenuTheme } from "./components/menu.js";
