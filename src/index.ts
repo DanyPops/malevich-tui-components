@@ -30,3 +30,11 @@ export { BorderedSelectPanel, type BorderedSelectPanelOptions, type BorderedSele
 export { MaskedInput, type MaskedInputOptions } from "./components/masked-input.js";
 export { Form, type FormFieldConfig, type FormFieldInput, type FormOptions, type FormTheme } from "./components/form.js";
 export { HistoryChart, type ChartBucket, type ChartSeries, type HistoryChartOptions, type HistoryChartTheme } from "./components/history-chart.js";
+export {
+	buildDetailLines,
+	type BuildDetailLinesOptions,
+	type DetailField,
+	type DetailSection,
+	type DetailSectionItem,
+	type DetailViewTheme,
+} from "./components/detail-view.js";
