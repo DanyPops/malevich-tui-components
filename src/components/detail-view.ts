@@ -25,12 +25,14 @@ export interface DetailSectionItem {
 }
 
 export interface DetailSection {
-	/** e.g. "Description:" or "Comments (3):". Omitted entirely when not given (the section still renders its body/items, just without a heading line). */
+	/** e.g. "Description:" or "Comments (3):". Omitted entirely when not given (the section still renders its body/items/lines, just without a heading line). */
 	heading?: string;
-	/** Free-text body for a body-only section (e.g. a description). Mutually usable alongside `items` (heading, then body, then items) though most callers use one or the other. */
+	/** Free-text body for a body-only section (e.g. a description). Mutually usable alongside `items`/`lines` (heading, then body, then items/lines) though most callers use one shape per section. */
 	body?: string;
 	/** A dated/attributed thread (e.g. comments, history entries) -- each item gets its own leading blank line, optional byline, then wrapped body. */
 	items?: DetailSectionItem[];
+	/** Already-broken, pre-formatted lines rendered directly under the heading with no blank line between them (e.g. metadata key:value rows, a checklist, a flat history log) -- distinct from `items`, which gives each entry its own separating blank line. Each line is wrapped and styled with `theme.line` (falling back to `theme.body`). */
+	lines?: string[];
 }
 
 export interface DetailViewTheme {
@@ -42,6 +44,8 @@ export interface DetailViewTheme {
 	byline: (s: string) => string;
 	/** Plain body text (a description's or thread item's own content). */
 	body: (s: string) => string;
+	/** A `lines`-section's own consecutive rows (metadata, checklist, history). Falls back to `body` when not given. */
+	line?: (s: string) => string;
 }
 
 export interface BuildDetailLinesOptions {
@@ -77,6 +81,9 @@ export function buildDetailLines(width: number, options: BuildDetailLinesOptions
 		if (section.body !== undefined) {
 			lines.push("");
 			lines.push(...wrapWith(section.body, theme.body));
+		}
+		for (const rawLine of section.lines ?? []) {
+			lines.push(...wrapWith(rawLine, theme.line ?? theme.body));
 		}
 		for (const item of section.items ?? []) {
 			lines.push("");

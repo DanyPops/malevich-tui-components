@@ -95,6 +95,25 @@ describe("buildDetailLines", () => {
 		]);
 	});
 
+	it("a `lines` section renders its flat rows directly under the heading, with no blank line between them", () => {
+		const lines = buildDetailLines(80, {
+			theme: plainTheme,
+			sections: [{ heading: "Metadata:", lines: ["  owner: Daniel", "  state: verified"] }],
+		});
+		expect(lines).toEqual(["", "Metadata:", "  owner: Daniel", "  state: verified"]);
+	});
+
+	it("a `lines` section falls back to theme.body when theme.line isn't given", () => {
+		const lines = buildDetailLines(80, { theme: plainTheme, sections: [{ lines: ["a", "b"] }] });
+		expect(lines).toEqual(["", "a", "b"]);
+	});
+
+	it("a `lines` section uses theme.line when given, distinct from theme.body", () => {
+		const styled: DetailViewTheme = { ...plainTheme, body: (s) => `[body]${s}`, line: (s) => `[line]${s}` };
+		const lines = buildDetailLines(80, { theme: styled, sections: [{ heading: "Metadata:", lines: ["owner: Daniel"] }] });
+		expect(lines).toEqual(["", "Metadata:", "[line]owner: Daniel"]);
+	});
+
 	it("renders an empty string as a single blank line, not zero lines", () => {
 		const lines = buildDetailLines(80, { theme: plainTheme, fields: [{ label: "Empty", value: "" }] });
 		expect(lines).toEqual(["Empty: "]);
