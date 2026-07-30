@@ -54,6 +54,7 @@ handling; components default to plain-ASCII measurement otherwise.
 | `Form` | An N-field Tab/Shift+Tab-navigable form with required-field validation, keyed to a Record result. Composes with the host's own text inputs and Malevich's MaskedInput. |
 | `HistoryChart` | A cumulative, stacked-by-series ASCII bar chart with a Y-axis scale, an optional budget threshold line, X-axis time labels, and a legend. |
 | `Text` | Plain "render a string, styled and fit to width" primitive -- truncates or word-wraps to the render width. |
+| `Board` | A multi-column card board (Kanban-style): items grouped into columns, keyboard-navigable selection (arrow keys move between cards, skipping empty columns), caller-supplied card rendering. |
 
 ## Utilities
 
