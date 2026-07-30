@@ -5,6 +5,7 @@
  * host's own SelectList) and delegates handleInput/invalidate to it.
  */
 import type { Component } from "../component.js";
+import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface BorderedSelectPanelTheme {
@@ -20,6 +21,8 @@ export interface BorderedSelectPanelOptions {
 	helpText?: string;
 	theme: BorderedSelectPanelTheme;
 	measure?: TextMeasure;
+	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
+	glyphs?: GlyphSet;
 }
 
 /** Wraps a host-provided list Component in the border+title+help-text chrome duplicated across five real Pi extensions. Forwards handleInput/invalidate directly to the wrapped list -- this component owns only the chrome. */
@@ -29,6 +32,7 @@ export class BorderedSelectPanel implements Component {
 	private readonly helpText: string | undefined;
 	private readonly theme: BorderedSelectPanelTheme;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphSet;
 
 	constructor(opts: BorderedSelectPanelOptions) {
 		this.title = opts.title;
@@ -36,6 +40,7 @@ export class BorderedSelectPanel implements Component {
 		this.helpText = opts.helpText;
 		this.theme = opts.theme;
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 	}
 
 	invalidate(): void {
@@ -48,7 +53,7 @@ export class BorderedSelectPanel implements Component {
 
 	render(width: number): string[] {
 		const { theme } = this;
-		const border = theme.border("─".repeat(Math.max(1, width)));
+		const border = theme.border(this.glyphs.line.thin.repeat(Math.max(1, width)));
 		const titleLine = theme.title(this.measure.truncateToWidth(this.title, width, "…"));
 
 		const lines = [border, titleLine, ...this.list.render(width)];

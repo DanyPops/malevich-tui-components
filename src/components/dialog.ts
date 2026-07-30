@@ -4,6 +4,7 @@
  * by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
+import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface DialogAction {
@@ -26,6 +27,8 @@ export interface DialogOptions {
 	theme: DialogTheme;
 	/** Defaults to ASCII-only measurement. */
 	measure?: TextMeasure;
+	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
+	glyphs?: GlyphSet;
 }
 
 /** A bordered title+body+action-hints dialog. Dispatches to the matching DialogAction on a key press (case-insensitive), or the "n"/"Esc"-keyed action (if any) on Escape. */
@@ -35,6 +38,7 @@ export class Dialog implements Component {
 	private readonly actions: DialogAction[];
 	private readonly theme: DialogTheme;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphSet;
 
 	constructor(opts: DialogOptions) {
 		this.title = opts.title;
@@ -42,6 +46,7 @@ export class Dialog implements Component {
 		this.actions = opts.actions;
 		this.theme = opts.theme;
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 	}
 
 	invalidate(): void {}
@@ -51,7 +56,8 @@ export class Dialog implements Component {
 		const lines: string[] = [];
 		const inner = Math.max(10, width - 4);
 
-		lines.push(theme.border("─".repeat(width)));
+		const rule = this.glyphs.line.thin.repeat(width);
+		lines.push(theme.border(rule));
 		lines.push(theme.title(`  ${this.title}`));
 		lines.push("");
 
@@ -62,7 +68,7 @@ export class Dialog implements Component {
 		lines.push("");
 		const hints = this.actions.map((a) => `[${a.key}] ${a.label}`).join("  ");
 		lines.push(theme.dim(`  ${hints}`));
-		lines.push(theme.border("─".repeat(width)));
+		lines.push(theme.border(rule));
 
 		return lines;
 	}

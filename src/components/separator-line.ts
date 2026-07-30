@@ -5,16 +5,10 @@
  * replaced by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
+import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export type SeparatorWeight = "thick" | "thin" | "dotted" | "dashed";
-
-const WEIGHT_CHARS: Record<SeparatorWeight, string> = {
-	thin: "─",
-	thick: "━",
-	dotted: "┄",
-	dashed: "╌",
-};
 
 export interface SeparatorLineOptions {
 	weight?: SeparatorWeight;
@@ -23,6 +17,8 @@ export interface SeparatorLineOptions {
 	/** @deprecated Prefer setLeftLabel/setRightLabel. Single-label align when only one side is set. */
 	labelAlign?: "left" | "right";
 	measure?: TextMeasure;
+	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
+	glyphs?: GlyphSet;
 }
 
 /** A full-width horizontal rule with optional embedded left and/or right labels, each corner always keeping at least one rule character so a label never flushes the edge. */
@@ -33,6 +29,7 @@ export class SeparatorLine implements Component {
 	private readonly style: (s: string) => string;
 	private readonly labelAlign: "left" | "right";
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphSet;
 
 	constructor(opts: SeparatorLineOptions = {}) {
 		this.weight = opts.weight ?? "thin";
@@ -41,6 +38,7 @@ export class SeparatorLine implements Component {
 		this.style = opts.style ?? ((s) => s);
 		this.labelAlign = opts.labelAlign ?? "left";
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 	}
 
 	/** @deprecated Use setLeftLabel -- kept for callers that set a single left label. */
@@ -61,7 +59,7 @@ export class SeparatorLine implements Component {
 
 	render(width: number): string[] {
 		if (width <= 0) return [""];
-		const char = WEIGHT_CHARS[this.weight];
+		const char = this.glyphs.line[this.weight];
 		const pad = (label: string): string => (label ? ` ${label} ` : "");
 
 		let left = pad(this.leftLabel);

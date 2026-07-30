@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { asciiGlyphs } from "../src/glyphs.ts";
 import { Dialog } from "../src/components/dialog.ts";
 
 const THEME = { border: (s: string) => s, title: (s: string) => s, body: (s: string) => s, dim: (s: string) => s };
@@ -62,5 +63,12 @@ describe("Dialog", () => {
 		const dialog = new Dialog({ title: "T", body: "b", actions: [], theme: THEME });
 		expect(typeof dialog.render).toBe("function");
 		expect(() => dialog.invalidate()).not.toThrow();
+	});
+
+	it("draws its border from an injected glyph set instead of the unicode default", () => {
+		const dialog = new Dialog({ title: "T", body: "b", actions: [], theme: THEME, glyphs: asciiGlyphs });
+		const lines = dialog.render(10);
+		expect(lines[0]).toBe("-".repeat(10));
+		expect(lines[lines.length - 1]).toBe("-".repeat(10));
 	});
 });

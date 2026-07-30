@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { asciiGlyphs } from "../src/glyphs.ts";
 import { SeparatorLine } from "../src/components/separator-line.ts";
 
 describe("SeparatorLine", () => {
@@ -66,5 +67,10 @@ describe("SeparatorLine", () => {
 		const line = new SeparatorLine();
 		expect(typeof line.render).toBe("function");
 		expect(() => line.invalidate()).not.toThrow();
+	});
+
+	it("draws its rule characters from an injected glyph set instead of the unicode default", () => {
+		const line = new SeparatorLine({ weight: "thick", glyphs: asciiGlyphs });
+		expect(line.render(5)).toEqual(["=".repeat(5)]);
 	});
 });

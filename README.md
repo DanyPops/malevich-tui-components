@@ -53,6 +53,15 @@ handling; components default to plain-ASCII measurement otherwise.
 | `MaskedInput` | A single-line input rendering only mask glyphs, with bracketed-paste handling. Generalized from Enigma's own. |
 | `Form` | An N-field Tab/Shift+Tab-navigable form with required-field validation, keyed to a Record result. Composes with the host's own text inputs and Malevich's MaskedInput. |
 | `HistoryChart` | A cumulative, stacked-by-series ASCII bar chart with a Y-axis scale, an optional budget threshold line, X-axis time labels, and a legend. |
+| `Text` | Plain "render a string, styled and fit to width" primitive -- truncates or word-wraps to the render width. |
+
+## Utilities
+
+| Export | Description |
+|---|---|
+| `GlyphSet` / `unicodeGlyphs` / `asciiGlyphs` | Injectable rule/tree-connector characters, accepted via `glyphs` on `Table`, `Dialog`, `BorderedSelectPanel`, `SeparatorLine`, and `TreeView` -- swap in `asciiGlyphs` for terminals/fonts that render box-drawing poorly. Every component defaults to `unicodeGlyphs`. |
+| `deriveTableColumns` | Given `unknown[]`, derives `Table`-ready columns/rows when every item is a plain object: unions the keys, stringifies non-string values. Returns `undefined` for non-tabular input. |
+| `firstDistinctStyle` | Given a baseline-styled string and candidate-styled strings (in preference order), returns the first candidate that's visually distinct from the baseline, else a fallback -- the fix for a theme that maps two semantic color tokens to the same underlying color, making a more specific token look identical to plain text. |
 
 ## License
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { asciiGlyphs } from "../src/glyphs.ts";
 import { TreeView } from "../src/components/tree-view.ts";
 
 describe("TreeView", () => {
@@ -49,5 +50,10 @@ describe("TreeView", () => {
 		const tree = new TreeView({ nodes: [] });
 		expect(tree.render(80)).toEqual([]);
 		expect(() => tree.invalidate()).not.toThrow();
+	});
+
+	it("draws its connectors from an injected glyph set instead of the unicode default", () => {
+		const tree = new TreeView({ nodes: [{ label: "a" }, { label: "b" }], glyphs: asciiGlyphs });
+		expect(tree.render(80)).toEqual(["|-- a", "`-- b"]);
 	});
 });

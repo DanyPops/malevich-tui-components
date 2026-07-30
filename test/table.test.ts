@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { Table } from "../src/components/table.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
+import { deriveTableColumns, Table } from "../src/components/table.ts";
 
 describe("Table", () => {
 	it("renders a header, separator, and one line per row", () => {
@@ -101,5 +102,42 @@ describe("Table", () => {
 		expect(typeof table.render).toBe("function");
 		expect(typeof table.invalidate).toBe("function");
 		expect(() => table.invalidate()).not.toThrow();
+	});
+
+	it("draws its separator from an injected glyph set instead of the unicode default", () => {
+		const table = new Table({ columns: [{ header: "X", key: "x" }], rows: [], glyphs: asciiGlyphs });
+		expect(table.render(80)[1]).toBe("-".repeat(1));
+	});
+});
+
+describe("deriveTableColumns", () => {
+	it("returns undefined for an empty array", () => {
+		expect(deriveTableColumns([])).toBeUndefined();
+	});
+
+	it("returns undefined when any item isn't a plain object", () => {
+		expect(deriveTableColumns([{ a: 1 }, "not an object"])).toBeUndefined();
+		expect(deriveTableColumns([{ a: 1 }, [1, 2]])).toBeUndefined();
+		expect(deriveTableColumns([{ a: 1 }, null])).toBeUndefined();
+	});
+
+	it("unions keys across items and derives one column per key", () => {
+		const derived = deriveTableColumns([{ id: "1", title: "First" }, { id: "2", extra: true }]);
+		expect(derived?.columns.map((c) => c.key).sort()).toEqual(["extra", "id", "title"]);
+	});
+
+	it("keeps string values as-is and JSON-stringifies non-string values, filling missing keys with an empty string", () => {
+		const derived = deriveTableColumns([{ id: "1", title: "First", tags: ["a", "b"] }, { id: "2", title: "Second" }]);
+		expect(derived?.rows).toEqual([
+			{ id: "1", title: "First", tags: '["a","b"]' },
+			{ id: "2", title: "Second", tags: "" },
+		]);
+	});
+
+	it("round-trips through a real Table render", () => {
+		const derived = deriveTableColumns([{ id: "1", title: "First" }]);
+		const table = new Table({ ...derived! });
+		const text = table.render(80).join("\n");
+		expect(text).toContain("First");
 	});
 });

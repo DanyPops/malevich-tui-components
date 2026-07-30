@@ -4,13 +4,7 @@
  * directly rather than pulled in from Alef's own design system.
  */
 import type { Component } from "../component.js";
-
-const TREE = {
-	branch: "├── ",
-	last: "└── ",
-	pipe: "│   ",
-	space: "    ",
-} as const;
+import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
 
 export interface TreeNode {
 	label: string;
@@ -23,16 +17,20 @@ export interface TreeNode {
 export interface TreeViewOptions {
 	nodes: TreeNode[];
 	defaultStyle?: (s: string) => string;
+	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
+	glyphs?: GlyphSet;
 }
 
 /** Renders a labeled tree with box-drawing branch/pipe connectors. Each node may optionally embed a child Component (rendered indented beneath it) and/or its own list of child TreeNodes. */
 export class TreeView implements Component {
 	private nodes: TreeNode[];
 	private readonly defaultStyle: (s: string) => string;
+	private readonly glyphs: GlyphSet["tree"];
 
 	constructor(opts: TreeViewOptions) {
 		this.nodes = opts.nodes;
 		this.defaultStyle = opts.defaultStyle ?? ((s) => s);
+		this.glyphs = (opts.glyphs ?? unicodeGlyphs).tree;
 	}
 
 	setNodes(nodes: TreeNode[]): void {
@@ -44,18 +42,18 @@ export class TreeView implements Component {
 	render(width: number): string[] {
 		const lines: string[] = [];
 		const renderNode = (node: TreeNode, prefix: string, isLast: boolean): void => {
-			const branch = isLast ? TREE.last : TREE.branch;
+			const branch = isLast ? this.glyphs.last : this.glyphs.branch;
 			const style = node.style ?? this.defaultStyle;
 			lines.push(style(`${prefix}${branch}${node.label}`));
 			if (node.component && !node.collapsed) {
-				const contentPrefix = prefix + (isLast ? TREE.space : TREE.pipe);
+				const contentPrefix = prefix + (isLast ? this.glyphs.space : this.glyphs.pipe);
 				const contentWidth = Math.max(10, width - contentPrefix.length);
 				for (const line of node.component.render(contentWidth)) {
 					lines.push(`${contentPrefix}  ${line}`);
 				}
 			}
 			if (node.collapsed || !node.children?.length) return;
-			const childPrefix = prefix + (isLast ? TREE.space : TREE.pipe);
+			const childPrefix = prefix + (isLast ? this.glyphs.space : this.glyphs.pipe);
 			for (let i = 0; i < node.children.length; i++) {
 				renderNode(node.children[i] as TreeNode, childPrefix, i === node.children.length - 1);
 			}

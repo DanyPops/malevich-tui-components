@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { asciiGlyphs } from "../src/glyphs.ts";
 import { BorderedSelectPanel } from "../src/components/bordered-select-panel.ts";
 
 const THEME = { border: (s: string) => s, title: (s: string) => s, help: (s: string) => s };
@@ -70,5 +71,11 @@ describe("BorderedSelectPanel", () => {
 	it("does not throw when the wrapped list has no handleInput at all", () => {
 		const panel = new BorderedSelectPanel({ title: "T", list: { render: () => [], invalidate: () => {} }, theme: THEME });
 		expect(() => panel.handleInput("x")).not.toThrow();
+	});
+
+	it("draws its border from an injected glyph set instead of the unicode default", () => {
+		const panel = new BorderedSelectPanel({ title: "T", list: fakeList([]), theme: THEME, glyphs: asciiGlyphs });
+		const lines = panel.render(5);
+		expect(lines[0]).toBe("-".repeat(5));
 	});
 });
