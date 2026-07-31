@@ -30,6 +30,7 @@ export interface EnvelopeOptions {
 	borderStyle?: "rounded" | "light" | "heavy";
 	style?: (s: string) => string;
 	titleStyle?: (s: string) => string;
+	/** Defaults to ASCII-only measurement (raw string length, blind to ANSI escape codes). Unsafe the moment content is styled -- pad computation for the right border will land at a different column on every line depending on how much styling that line happens to carry. Pass a host's real visibleWidth/truncateToWidth (e.g. pi-tui's or alef-tui's) whenever content might contain real ANSI. */
 	measure?: TextMeasure;
 }
 

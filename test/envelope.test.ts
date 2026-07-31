@@ -63,4 +63,39 @@ describe("Envelope", () => {
 		env.invalidate();
 		expect(invalidated).toBe(true);
 	});
+
+	// Real terminal styling is ANSI escape codes embedded directly in the
+	// string -- the default asciiTextMeasure counts every escape byte as a
+	// visible character, so it undercounts the padding a styled line needs.
+	// Every existing test above uses plain unstyled content, which can never
+	// catch this: it only shows up once a real theme (or anything else that
+	// emits real ANSI) is in the picture. Confirmed live in pi-packed's own
+	// panel, where this exact gap put the right border at a different column
+	// on every row depending on how much styling that row happened to carry.
+	const ansiOrange = (s: string) => `\u001b[38;5;208m${s}\u001b[0m`;
+	function stripAnsi(s: string): string {
+		return s.replace(/\u001b\[[0-9;]*m/g, "");
+	}
+
+	it("misaligns the right border when styled content is measured with the default ASCII-only measure", () => {
+		const env = new Envelope({ title: "T", collapsed: false });
+		// One styled line, one plain line of the same real visible length --
+		// the ANSI escape bytes inflate only the styled line's raw .length.
+		env.setContent({ render: () => [ansiOrange("short"), "short"], invalidate: () => {} });
+		const lines = env.render(20);
+		const visibleWidths = lines.slice(1, -1).map((line) => stripAnsi(line).length);
+		expect(new Set(visibleWidths).size).toBeGreaterThan(1); // the actual bug: not all 20
+	});
+
+	it("aligns the right border correctly when an ANSI-aware measure is injected", () => {
+		const ansiAwareMeasure = {
+			visibleWidth: (text: string) => stripAnsi(text).length,
+			truncateToWidth: (text: string, maxWidth: number) => text, // not exercised by this fixture
+		};
+		const env = new Envelope({ title: "T", collapsed: false, measure: ansiAwareMeasure });
+		env.setContent({ render: () => [ansiOrange("short"), "short"], invalidate: () => {} });
+		const lines = env.render(20);
+		const visibleWidths = lines.slice(1, -1).map((line) => stripAnsi(line).length);
+		expect(new Set(visibleWidths)).toEqual(new Set([20])); // both lines land on the same real column
+	});
 });
