@@ -38,3 +38,13 @@ export {
 	type DetailSectionItem,
 	type DetailViewTheme,
 } from "./components/detail-view.js";
+export {
+	buildContextRows,
+	renderContextRowLines,
+	renderContextUsageBar,
+	type ContextBarTheme,
+	type ContextRow,
+	type ContextRowsTheme,
+	type ContextSegment,
+	type ContextSegmentItem,
+} from "./components/context-breakdown.js";
