@@ -71,4 +71,19 @@ describe("Dialog", () => {
 		expect(lines[0]).toBe("-".repeat(10));
 		expect(lines[lines.length - 1]).toBe("-".repeat(10));
 	});
+
+	it("uses a custom KeyMatcher when provided instead of the legacy default", () => {
+		let called = false;
+		const dialog = new Dialog({
+			title: "T",
+			body: "b",
+			actions: [{ label: "No", key: "n", action: () => { called = true; } }],
+			theme: THEME,
+			matchesKey: (data, keyId) => keyId === "escape" && data === "CUSTOM_ESCAPE",
+		});
+		dialog.handleInput("\x1b");
+		expect(called).toBe(false);
+		dialog.handleInput("CUSTOM_ESCAPE");
+		expect(called).toBe(true);
+	});
 });

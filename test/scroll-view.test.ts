@@ -73,4 +73,16 @@ describe("ScrollView", () => {
 		expect(lines).toHaveLength(2);
 		for (const line of lines) expect(line.endsWith("█") || line.endsWith("░")).toBe(true);
 	});
+
+	it("uses a custom KeyMatcher when provided instead of the legacy default", () => {
+		const view = new ScrollView(fixedChild(["1", "2", "3", "4", "5"]), {
+			maxHeight: 2,
+			showScrollbar: false,
+			matchesKey: (data, keyId) => keyId === "down" && data === "CUSTOM_DOWN",
+		});
+		view.handleInput("\x1b[B");
+		expect(view.render(80)).toEqual(["1", "2"]);
+		view.handleInput("CUSTOM_DOWN");
+		expect(view.render(80)).toEqual(["2", "3"]);
+	});
 });

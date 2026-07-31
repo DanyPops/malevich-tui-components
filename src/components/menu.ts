@@ -7,6 +7,7 @@ import type { Component } from "../component.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
+import { renderFramedPanel } from "./framed-panel.js";
 
 export interface MenuItem {
 	label: string;
@@ -55,23 +56,23 @@ export class Menu implements Component {
 
 	render(width: number): string[] {
 		const { theme, items, selectedIndex } = this;
-		const lines: string[] = [];
 
-		if (this.title) lines.push(theme.title(this.title));
-		lines.push(theme.border("─".repeat(width)));
-
-		for (let i = 0; i < items.length; i++) {
-			const item = items[i] as MenuItem;
+		const itemLines = items.map((item, i) => {
 			const isSel = i === selectedIndex;
 			const prefix = isSel ? "  > " : "    ";
 			const keyHint = item.key ? theme.dim(` [${item.key}]`) : "";
 			const desc = item.description ? theme.dim(` — ${item.description}`) : "";
 			const line = this.measure.truncateToWidth(`${prefix}${item.label}${keyHint}${desc}`, width, "…");
-			lines.push(isSel ? theme.selected(line) : theme.normal(line));
-		}
+			return isSel ? theme.selected(line) : theme.normal(line);
+		});
 
-		lines.push(theme.border("─".repeat(width)));
-		return lines;
+		return renderFramedPanel({
+			width,
+			rule: "─",
+			ruleStyle: theme.border,
+			titleLines: this.title ? [theme.title(this.title)] : undefined,
+			contentLines: itemLines,
+		});
 	}
 
 	handleInput(data: string): void {
@@ -83,11 +84,11 @@ export class Menu implements Component {
 			this.selectedIndex = (this.selectedIndex - 1 + this.items.length) % this.items.length;
 			return;
 		}
-		if (data === "\r") {
+		if (this.matchesKey(data, "enter")) {
 			this.items[this.selectedIndex]?.action();
 			return;
 		}
-		if (data === "\x1b" || data === "q") {
+		if (this.matchesKey(data, "escape") || data === "q") {
 			this.onClose?.();
 			return;
 		}

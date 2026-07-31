@@ -4,12 +4,15 @@
  * replaced by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
+import type { KeyMatcher } from "../key-matcher.js";
+import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface ScrollViewOptions {
 	maxHeight?: number;
 	showScrollbar?: boolean;
 	measure?: TextMeasure;
+	matchesKey?: KeyMatcher;
 }
 
 /** Wraps a child Component in a fixed-height, vertically scrollable viewport with an optional thumb-position scrollbar. j/k or arrow-down/up scroll one line; g/G jump to top/bottom. */
@@ -18,11 +21,13 @@ export class ScrollView implements Component {
 	private readonly maxHeight: number;
 	private readonly showScrollbar: boolean;
 	private readonly measure: TextMeasure;
+	private readonly matchesKey: KeyMatcher;
 
 	constructor(private child: Component, opts: ScrollViewOptions = {}) {
 		this.maxHeight = opts.maxHeight ?? 20;
 		this.showScrollbar = opts.showScrollbar ?? true;
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
 	}
 
 	scrollDown(n = 1): void {
@@ -47,8 +52,8 @@ export class ScrollView implements Component {
 	}
 
 	handleInput(data: string): void {
-		if (data === "j" || data === "\x1b[B") { this.scrollDown(); return; }
-		if (data === "k" || data === "\x1b[A") { this.scrollUp(); return; }
+		if (data === "j" || this.matchesKey(data, "down")) { this.scrollDown(); return; }
+		if (data === "k" || this.matchesKey(data, "up")) { this.scrollUp(); return; }
 		if (data === "g") { this.scrollToTop(); return; }
 		if (data === "G") { this.scrollToBottom(); return; }
 	}

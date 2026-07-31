@@ -20,9 +20,9 @@ describe("Menu", () => {
 		expect(lines[2]).not.toStartWith(">");
 	});
 
-	it("renders the title above the border when provided", () => {
+	it("renders the title below the top border when provided, matching Dialog/BorderedSelectPanel's shared frame order", () => {
 		const menu = new Menu({ items: items(), title: "Actions", theme: THEME });
-		expect(menu.render(40)[0]).toBe("Actions");
+		expect(menu.render(40)[1]).toBe("Actions");
 	});
 
 	it("includes the key hint and description in each item's line", () => {

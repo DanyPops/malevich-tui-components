@@ -10,7 +10,7 @@ import type { Component } from "../component.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
-import { Badge } from "./badge.js";
+import { formatBadgeCount } from "./badge.js";
 
 export interface BoardColumn<T> {
 	name: string;
@@ -147,9 +147,8 @@ export class Board<T> implements Component {
 		theme: BoardTheme,
 		emptyLabel: string,
 	): { lines: string[]; ranges: BoardItemRange[] } {
-		const header = new Badge({ label: col.name, style: theme.header });
-		header.setValue(col.items.length);
-		const lines: string[] = [...header.render(width), theme.border("─".repeat(width))];
+		const headerText = col.name ? `${col.name}: ${formatBadgeCount(col.items.length)}` : formatBadgeCount(col.items.length);
+		const lines: string[] = [theme.header(headerText), theme.border("─".repeat(width))];
 		const ranges: BoardItemRange[] = [];
 
 		if (col.items.length === 0) lines.push(theme.empty(`  ${emptyLabel}`));

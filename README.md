@@ -67,6 +67,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `GlyphSet` / `unicodeGlyphs` / `asciiGlyphs` | Injectable rule/tree-connector characters, accepted via `glyphs` on `Table`, `Dialog`, `BorderedSelectPanel`, `SeparatorLine`, and `TreeView` -- swap in `asciiGlyphs` for terminals/fonts that render box-drawing poorly. Every component defaults to `unicodeGlyphs`. |
 | `deriveTableColumns` | Given `unknown[]`, derives `Table`-ready columns/rows when every item is a plain object: unions the keys, stringifies non-string values. Returns `undefined` for non-tabular input. |
 | `firstDistinctStyle` | Given a baseline-styled string and candidate-styled strings (in preference order), returns the first candidate that's visually distinct from the baseline, else a fallback -- the fix for a theme that maps two semantic color tokens to the same underlying color, making a more specific token look identical to plain text. |
+| `renderFramedPanel` | The rule+title+content+rule scaffold shared by `Dialog`, `Menu`, and `BorderedSelectPanel` -- assembly only, callers pass already-styled/measured lines. |
+| `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
 
 ## License
 

@@ -5,7 +5,10 @@
  */
 import type { Component } from "../component.js";
 import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import type { KeyMatcher } from "../key-matcher.js";
+import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
+import { renderFramedPanel } from "./framed-panel.js";
 
 export interface DialogAction {
 	label: string;
@@ -29,6 +32,7 @@ export interface DialogOptions {
 	measure?: TextMeasure;
 	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
 	glyphs?: GlyphSet;
+	matchesKey?: KeyMatcher;
 }
 
 /** A bordered title+body+action-hints dialog. Dispatches to the matching DialogAction on a key press (case-insensitive), or the "n"/"Esc"-keyed action (if any) on Escape. */
@@ -39,6 +43,7 @@ export class Dialog implements Component {
 	private readonly theme: DialogTheme;
 	private readonly measure: TextMeasure;
 	private readonly glyphs: GlyphSet;
+	private readonly matchesKey: KeyMatcher;
 
 	constructor(opts: DialogOptions) {
 		this.title = opts.title;
@@ -47,30 +52,30 @@ export class Dialog implements Component {
 		this.theme = opts.theme;
 		this.measure = opts.measure ?? asciiTextMeasure;
 		this.glyphs = opts.glyphs ?? unicodeGlyphs;
+		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
 	}
 
 	invalidate(): void {}
 
 	render(width: number): string[] {
 		const { theme } = this;
-		const lines: string[] = [];
 		const inner = Math.max(10, width - 4);
 
-		const rule = this.glyphs.line.thin.repeat(width);
-		lines.push(theme.border(rule));
-		lines.push(theme.title(`  ${this.title}`));
-		lines.push("");
-
+		const bodyLines: string[] = [""];
 		for (const line of this.body.split("\n")) {
-			lines.push(theme.body(`  ${this.measure.truncateToWidth(line, inner, "…")}`));
+			bodyLines.push(theme.body(`  ${this.measure.truncateToWidth(line, inner, "…")}`));
 		}
-
-		lines.push("");
+		bodyLines.push("");
 		const hints = this.actions.map((a) => `[${a.key}] ${a.label}`).join("  ");
-		lines.push(theme.dim(`  ${hints}`));
-		lines.push(theme.border(rule));
+		bodyLines.push(theme.dim(`  ${hints}`));
 
-		return lines;
+		return renderFramedPanel({
+			width,
+			rule: this.glyphs.line.thin,
+			ruleStyle: theme.border,
+			titleLines: [theme.title(`  ${this.title}`)],
+			contentLines: bodyLines,
+		});
 	}
 
 	handleInput(data: string): void {
@@ -80,7 +85,7 @@ export class Dialog implements Component {
 				return;
 			}
 		}
-		if (data === "\x1b") {
+		if (this.matchesKey(data, "escape")) {
 			const cancel = this.actions.find((a) => a.key === "n" || a.key === "Esc");
 			cancel?.action();
 		}

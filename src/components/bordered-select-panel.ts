@@ -7,6 +7,7 @@
 import type { Component } from "../component.js";
 import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
+import { renderFramedPanel } from "./framed-panel.js";
 
 export interface BorderedSelectPanelTheme {
 	border: (s: string) => string;
@@ -53,12 +54,15 @@ export class BorderedSelectPanel implements Component {
 
 	render(width: number): string[] {
 		const { theme } = this;
-		const border = theme.border(this.glyphs.line.thin.repeat(Math.max(1, width)));
 		const titleLine = theme.title(this.measure.truncateToWidth(this.title, width, "…"));
 
-		const lines = [border, titleLine, ...this.list.render(width)];
-		if (this.helpText) lines.push(theme.help(this.measure.truncateToWidth(this.helpText, width, "…")));
-		lines.push(border);
-		return lines;
+		return renderFramedPanel({
+			width: Math.max(1, width),
+			rule: this.glyphs.line.thin,
+			ruleStyle: theme.border,
+			titleLines: [titleLine],
+			contentLines: this.list.render(width),
+			footerLines: this.helpText ? [theme.help(this.measure.truncateToWidth(this.helpText, width, "…"))] : undefined,
+		});
 	}
 }

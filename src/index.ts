@@ -2,6 +2,7 @@ export type { Component, Focusable } from "./component.js";
 export { asciiTextMeasure, type TextMeasure } from "./text-measure.js";
 export { asciiGlyphs, unicodeGlyphs, type GlyphSet } from "./glyphs.js";
 export { firstDistinctStyle } from "./style-cascade.js";
+export { renderFramedPanel, type FramedPanelOptions } from "./components/framed-panel.js";
 export { Text, type TextOptions } from "./components/text.js";
 export { Table, deriveTableColumns, type DerivedTable, type TableColumn, type TableOptions } from "./components/table.js";
 export { ProgressBar, type ProgressBarOptions } from "./components/progress-bar.js";
