@@ -32,6 +32,7 @@ export interface FormTheme {
 }
 
 export interface FormOptions {
+	theme: FormTheme;
 	fields: FormFieldConfig[];
 	matchesKey?: KeyMatcher;
 	measure?: TextMeasure;
@@ -52,6 +53,7 @@ export class Form implements Component {
 	private readonly fields: FormFieldConfig[];
 	private focusIndex = 0;
 	private errorMessage: string | undefined;
+	private readonly theme: FormTheme;
 	private readonly matchesKey: KeyMatcher;
 	private readonly measure: TextMeasure;
 	private readonly helpText: string;
@@ -59,7 +61,8 @@ export class Form implements Component {
 	onSubmit?: (result: Record<string, string>) => void;
 	onCancel?: () => void;
 
-	constructor(private readonly theme: FormTheme, opts: FormOptions) {
+	constructor(opts: FormOptions) {
+		this.theme = opts.theme;
 		this.fields = opts.fields;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
 		this.measure = opts.measure ?? asciiTextMeasure;

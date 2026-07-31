@@ -27,7 +27,7 @@ describe("Form", () => {
 	it("starts focused on the first field and moves forward on Tab, backward on Shift+Tab", () => {
 		const a = textField();
 		const b = textField();
-		const form = new Form(THEME, { fields: [{ key: "a", label: "A", input: a }, { key: "b", label: "B", input: b }] });
+		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: a }, { key: "b", label: "B", input: b }] });
 		type(form, "1");
 		form.handleInput(TAB);
 		type(form, "2");
@@ -39,7 +39,8 @@ describe("Form", () => {
 
 	it("Enter on a non-last field advances focus instead of submitting", () => {
 		let submitted = false;
-		const form = new Form(THEME, {
+		const form = new Form({
+			theme: THEME,
 			fields: [{ key: "a", label: "A", input: textField() }, { key: "b", label: "B", input: textField() }],
 		});
 		form.onSubmit = () => { submitted = true; };
@@ -52,7 +53,7 @@ describe("Form", () => {
 		const b = textField();
 		type(a, "x");
 		type(b, "y");
-		const form = new Form(THEME, { fields: [{ key: "first", label: "A", input: a }, { key: "second", label: "B", input: b }] });
+		const form = new Form({ theme: THEME, fields: [{ key: "first", label: "A", input: a }, { key: "second", label: "B", input: b }] });
 		let result: unknown;
 		form.onSubmit = (r) => { result = r; };
 		form.handleInput(TAB);
@@ -62,7 +63,7 @@ describe("Form", () => {
 
 	it("refuses to submit while a required field is empty, without calling onSubmit", () => {
 		let called = false;
-		const form = new Form(THEME, { fields: [{ key: "a", label: "A", input: textField() }] });
+		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
 		form.onSubmit = () => { called = true; };
 		form.handleInput(ENTER);
 		expect(called).toBe(false);
@@ -71,7 +72,8 @@ describe("Form", () => {
 
 	it("allows submission with an empty field marked required: false", () => {
 		let result: unknown;
-		const form = new Form(THEME, {
+		const form = new Form({
+			theme: THEME,
 			fields: [{ key: "a", label: "A", input: textField(), required: false }],
 		});
 		form.onSubmit = (r) => { result = r; };
@@ -82,7 +84,7 @@ describe("Form", () => {
 	it("Escape invokes onCancel from any field, without calling onSubmit", () => {
 		let submitted = false;
 		let canceled = false;
-		const form = new Form(THEME, { fields: [{ key: "a", label: "A", input: textField() }] });
+		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
 		form.onSubmit = () => { submitted = true; };
 		form.onCancel = () => { canceled = true; };
 		type(form, "x");
@@ -92,7 +94,8 @@ describe("Form", () => {
 	});
 
 	it("composes with MaskedInput -- the masked field's real value never appears in render() output", () => {
-		const form = new Form(THEME, {
+		const form = new Form({
+			theme: THEME,
 			fields: [{ key: "name", label: "Name", input: textField() }, { key: "secret", label: "Secret", input: new MaskedInput() }],
 		});
 		form.handleInput(TAB);
@@ -101,17 +104,18 @@ describe("Form", () => {
 	});
 
 	it("uses the default help text when none is given, or a custom one when provided", () => {
-		const defaultForm = new Form(THEME, { fields: [{ key: "a", label: "A", input: textField() }] });
+		const defaultForm = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
 		expect(defaultForm.render(120).join("\n")).toContain("shift+tab previous");
 
-		const customForm = new Form(THEME, { fields: [{ key: "a", label: "A", input: textField() }], helpText: "custom help" });
+		const customForm = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }], helpText: "custom help" });
 		expect(customForm.render(120).join("\n")).toContain("custom help");
 	});
 
 	it("uses a custom KeyMatcher when provided instead of the legacy default", () => {
 		const a = textField();
 		const b = textField();
-		const form = new Form(THEME, {
+		const form = new Form({
+			theme: THEME,
 			fields: [{ key: "a", label: "A", input: a }, { key: "b", label: "B", input: b }],
 			matchesKey: (data, keyId) => keyId === "tab" && data === "CUSTOM_TAB",
 		});
@@ -121,7 +125,7 @@ describe("Form", () => {
 	});
 
 	it("implements the Component interface (render + invalidate)", () => {
-		const form = new Form(THEME, { fields: [{ key: "a", label: "A", input: textField() }] });
+		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
 		expect(typeof form.render).toBe("function");
 		expect(() => form.invalidate()).not.toThrow();
 	});

@@ -26,7 +26,7 @@ const badge = new Badge();
 const separatorLine = new SeparatorLine();
 const envelope = new Envelope({ title: "t" });
 const panel = new BorderedSelectPanel({ title: "t", list: table, theme: { border: (s) => s, title: (s) => s, help: (s) => s } });
-const form = new Form({ label: (s) => s, focusedLabel: (s) => s, help: (s) => s, error: (s) => s }, { fields: [] });
+const form = new Form({ theme: { label: (s) => s, focusedLabel: (s) => s, help: (s) => s, error: (s) => s }, fields: [] });
 const maskedInput = new MaskedInput();
 const historyChart = new HistoryChart({
 	title: "t", buckets: [], series: [], formatValue: (v) => `${v}`, noDataText: "n",
