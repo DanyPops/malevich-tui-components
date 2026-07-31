@@ -1,6 +1,6 @@
 {
 	"name": "malevich-tui-components",
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"description": "A terminal-UI component library: Table, forms, dialogs and more, built only against the Component/Focusable interface shape so it runs unmodified on any compatible TUI host (Pi's own pi-tui, Alef's alef-tui, or others).",
 	"type": "module",
 	"license": "MIT",

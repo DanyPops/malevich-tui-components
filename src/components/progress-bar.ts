@@ -35,6 +35,10 @@ export class ProgressBar implements Component {
 		this.opts.label = label;
 	}
 
+	setMax(max: number): void {
+		this.opts.max = max;
+	}
+
 	invalidate(): void {}
 
 	/** Renders just the filled/empty bar glyphs at the given width (or the configured default), with no label/percentage text. */

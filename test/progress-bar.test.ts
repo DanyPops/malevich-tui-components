@@ -48,6 +48,13 @@ describe("ProgressBar", () => {
 		expect(line).toContain("100%");
 	});
 
+	it("setMax mutates in place, matching setValue/setLabel -- one long-lived instance can be reused across a new batch's own total instead of reconstructing it", () => {
+		const bar = new ProgressBar({ value: 1, max: 2, width: 4 });
+		expect(bar.render(80)[0]).toContain("50%");
+		bar.setMax(4);
+		expect(bar.render(80)[0]).toContain("25%"); // same value (1), new max (4) -- 25%, not 50%
+	});
+
 	it("applies a custom style function to the whole rendered line", () => {
 		const bar = new ProgressBar({ value: 1, max: 1, width: 4, style: (t) => `<${t}>` });
 		expect(bar.render(80)[0]).toStartWith("<");
