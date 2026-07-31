@@ -1,8 +1,11 @@
 # Malevich
 
-A terminal-UI component library. Depends only on the `Component`/`Focusable`
-interface shape, not on any specific TUI framework's package — a component
-runs unmodified on any host whose types match that shape, e.g.
+A headless, renderer-agnostic TUI component library — layout and interaction
+algorithms only. Color, text measurement, key semantics, and terminal
+compositing are all host-supplied ports, not something Malevich owns or
+hardcodes; it depends only on the `Component`/`Focusable` interface shape, not
+on any specific TUI framework's package, so a component runs unmodified on
+any host whose types match that shape, e.g.
 [`@earendil-works/pi-tui`](https://github.com/earendil-works/pi-mono/tree/main/packages/tui)
 or [`@dpopsuev/alef-tui`](https://github.com/dpopsuev/alef).
 
