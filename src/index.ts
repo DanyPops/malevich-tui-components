@@ -25,6 +25,7 @@ export {
 	type BoardTheme,
 } from "./components/board.js";
 export { SeparatorLine, type SeparatorLineOptions, type SeparatorWeight } from "./components/separator-line.js";
+export { TabMenu, type TabMenuNode, type TabMenuOptions, type TabMenuTheme } from "./components/tab-menu.js";
 export { Envelope, type EnvelopeOptions } from "./components/envelope.js";
 export { BorderedSelectPanel, type BorderedSelectPanelOptions, type BorderedSelectPanelTheme } from "./components/bordered-select-panel.js";
 export { MaskedInput, type MaskedInputOptions } from "./components/masked-input.js";

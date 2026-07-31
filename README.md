@@ -55,6 +55,7 @@ handling; components default to plain-ASCII measurement otherwise.
 | `HistoryChart` | A cumulative, stacked-by-series ASCII bar chart with a Y-axis scale, an optional budget threshold line, X-axis time labels, and a legend. |
 | `Text` | Plain "render a string, styled and fit to width" primitive -- truncates or word-wraps to the render width. |
 | `Board` | A multi-column card board (Kanban-style): items grouped into columns, keyboard-navigable selection (arrow keys move between cards, skipping empty columns), caller-supplied card rendering. |
+| `TabMenu` | A horizontal tab bar that can descend into child levels -- Enter on a branch node walks down into its children, Escape walks back up (or cancels at the root). A leaf node resolves `onSelect` with its value; a mnemonic character jumps to and activates a node in one step. |
 
 ## Utilities
 
