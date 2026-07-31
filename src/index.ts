@@ -6,6 +6,7 @@ export { renderFramedPanel, type FramedPanelOptions } from "./components/framed-
 export { Text, type TextOptions } from "./components/text.js";
 export { Table, deriveTableColumns, type DerivedTable, type TableColumn, type TableOptions } from "./components/table.js";
 export { ProgressBar, type ProgressBarOptions } from "./components/progress-bar.js";
+export { Spinner, type SpinnerOptions } from "./components/spinner.js";
 export { Dialog, type DialogAction, type DialogOptions, type DialogTheme } from "./components/dialog.js";
 export { Toast, type ToastOptions, type ToastScheduler, type ToastTheme } from "./components/toast.js";
 export { NotificationQueue, type NotificationEntry, type NotificationOptions } from "./components/notification.js";
