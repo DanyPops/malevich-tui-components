@@ -78,4 +78,9 @@ describe("BorderedSelectPanel", () => {
 		const lines = panel.render(5);
 		expect(lines[0]).toBe("-".repeat(5));
 	});
+
+	it("omits its own top/bottom rule when framed is false, keeping title/list/help", () => {
+		const panel = new BorderedSelectPanel({ title: "Pick one", list: fakeList(), helpText: "enter • esc", theme: THEME, framed: false });
+		expect(panel.render(20)).toEqual(["Pick one", "item 1", "item 2", "enter • esc"]);
+	});
 });

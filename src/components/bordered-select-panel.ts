@@ -24,6 +24,8 @@ export interface BorderedSelectPanelOptions {
 	measure?: TextMeasure;
 	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
 	glyphs?: GlyphSet;
+	/** Defaults to true. Set false when this panel is already nested inside another framed container (e.g. an Envelope) -- its own top/bottom rule would just double up on that container's own border. */
+	framed?: boolean;
 }
 
 /** Wraps a host-provided list Component in the border+title+help-text chrome duplicated across five real Pi extensions. Forwards handleInput/invalidate directly to the wrapped list -- this component owns only the chrome. */
@@ -34,6 +36,7 @@ export class BorderedSelectPanel implements Component {
 	private readonly theme: BorderedSelectPanelTheme;
 	private readonly measure: TextMeasure;
 	private readonly glyphs: GlyphSet;
+	private readonly framed: boolean;
 
 	constructor(opts: BorderedSelectPanelOptions) {
 		this.title = opts.title;
@@ -42,6 +45,7 @@ export class BorderedSelectPanel implements Component {
 		this.theme = opts.theme;
 		this.measure = opts.measure ?? asciiTextMeasure;
 		this.glyphs = opts.glyphs ?? unicodeGlyphs;
+		this.framed = opts.framed ?? true;
 	}
 
 	invalidate(): void {
@@ -58,8 +62,7 @@ export class BorderedSelectPanel implements Component {
 
 		return renderFramedPanel({
 			width: Math.max(1, width),
-			rule: this.glyphs.line.thin,
-			ruleStyle: theme.border,
+			...(this.framed ? { rule: this.glyphs.line.thin, ruleStyle: theme.border } : {}),
 			titleLines: [titleLine],
 			contentLines: this.list.render(width),
 			footerLines: this.helpText ? [theme.help(this.measure.truncateToWidth(this.helpText, width, "…"))] : undefined,
