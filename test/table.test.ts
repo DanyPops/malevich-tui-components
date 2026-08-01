@@ -257,4 +257,38 @@ describe("deriveTableColumns", () => {
 		const text = table.render(80).join("\n");
 		expect(text).toContain("First");
 	});
+
+	// A mega-value field (e.g. a notes_list result's full-text `body`) shouldn't just be
+	// safely truncated at RENDER time (Table already guarantees that) -- its full,
+	// untruncated length still feeds the natural-width computation that decides how much
+	// room every OTHER column gets, so one huge outlier column can starve every genuinely
+	// useful column down to Table's own MIN_COLUMN_WIDTH floor even on an otherwise roomy
+	// terminal. Capping a cell's length at the data layer, before it ever reaches Table,
+	// fixes the skew at its source instead of only hiding the symptom downstream.
+	it("caps an oversized cell value at a default length, so it can't skew every other column's natural width", () => {
+		const derived = deriveTableColumns([{ id: "a", body: "x".repeat(5000) }]);
+		expect(derived?.rows[0]?.body.length).toBeLessThanOrEqual(120);
+		expect(derived?.rows[0]?.body.endsWith("…")).toBe(true);
+	});
+
+	it("leaves a cell under the cap completely untouched", () => {
+		const derived = deriveTableColumns([{ id: "1", title: "First" }]);
+		expect(derived?.rows[0]?.title).toBe("First");
+	});
+
+	it("applies the cap after JSON-stringifying a non-string value, not before", () => {
+		const derived = deriveTableColumns([{ tags: Array.from({ length: 200 }, (_, i) => `tag-${i}`) }]);
+		expect(derived?.rows[0]?.tags.length).toBeLessThanOrEqual(120);
+	});
+
+	it("honors a caller-supplied maxCellLength override", () => {
+		const derived = deriveTableColumns([{ body: "x".repeat(50) }], { maxCellLength: 10 });
+		expect(derived?.rows[0]?.body).toBe(`${"x".repeat(9)}…`);
+	});
+
+	it("disables the cap entirely when maxCellLength is Infinity", () => {
+		const huge = "x".repeat(5000);
+		const derived = deriveTableColumns([{ body: huge }], { maxCellLength: Number.POSITIVE_INFINITY });
+		expect(derived?.rows[0]?.body).toBe(huge);
+	});
 });

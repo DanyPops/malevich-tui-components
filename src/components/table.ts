@@ -32,18 +32,44 @@ export interface DerivedTable {
 	rows: Record<string, string>[];
 }
 
+export interface DeriveTableColumnsOptions {
+	/**
+	 * Caps each cell's string length before it ever reaches Table. Table's own
+	 * render-time truncation already guarantees no line exceeds the given
+	 * width, but that happens AFTER natural-width sizing -- an oversized
+	 * value's full, untruncated length still feeds the max-min fair-share
+	 * algorithm that decides how much room every OTHER column gets, so one
+	 * huge outlier (e.g. a notes_list result's full-text `body`) can starve
+	 * every genuinely useful column down to Table's own MIN_COLUMN_WIDTH
+	 * floor, even on an otherwise roomy terminal. Defaults to 120 -- long
+	 * enough for a meaningful preview, short enough not to dominate. Pass
+	 * Number.POSITIVE_INFINITY to disable.
+	 */
+	maxCellLength?: number;
+}
+
+const DEFAULT_MAX_CELL_LENGTH = 120;
+
+function capCellLength(text: string, maxLength: number): string {
+	if (text.length <= maxLength) return text;
+	if (maxLength <= 1) return "…".slice(0, Math.max(0, maxLength));
+	return `${text.slice(0, maxLength - 1)}…`;
+}
+
 /**
  * Given an array of unknown values, derives Table-ready columns/rows when
  * every item is a plain object (not an array, not null): the column set is
  * the union of keys across all items (insertion order of first appearance),
  * and each cell is the value as-is if it's already a string, else its JSON
- * representation. Returns undefined when the input isn't table-shaped
- * (empty, or any item isn't a plain object) -- a caller falls back to
- * whatever other rendering fits non-tabular data.
+ * representation, capped at maxCellLength (see DeriveTableColumnsOptions).
+ * Returns undefined when the input isn't table-shaped (empty, or any item
+ * isn't a plain object) -- a caller falls back to whatever other rendering
+ * fits non-tabular data.
  */
-export function deriveTableColumns(items: readonly unknown[]): DerivedTable | undefined {
+export function deriveTableColumns(items: readonly unknown[], options: DeriveTableColumnsOptions = {}): DerivedTable | undefined {
 	if (items.length === 0) return undefined;
 	if (!items.every((item) => item !== null && typeof item === "object" && !Array.isArray(item))) return undefined;
+	const maxCellLength = options.maxCellLength ?? DEFAULT_MAX_CELL_LENGTH;
 
 	const keys = new Set<string>();
 	for (const item of items as Record<string, unknown>[]) {
@@ -54,7 +80,8 @@ export function deriveTableColumns(items: readonly unknown[]): DerivedTable | un
 		const row: Record<string, string> = {};
 		for (const key of keys) {
 			const value = item[key];
-			row[key] = value === undefined ? "" : singleLine(typeof value === "string" ? value : JSON.stringify(value));
+			row[key] =
+				value === undefined ? "" : capCellLength(singleLine(typeof value === "string" ? value : JSON.stringify(value)), maxCellLength);
 		}
 		return row;
 	});

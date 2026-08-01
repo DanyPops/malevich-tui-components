@@ -51,7 +51,14 @@ export { Spinner, type SpinnerOptions } from "./components/spinner.js";
 export { SplitPane, type SplitPaneOptions } from "./components/split-pane.js";
 export { TabMenu, type TabMenuNode, type TabMenuOptions, type TabMenuTheme } from "./components/tab-menu.js";
 export { type TabBarTheme, TabbedContainer, type TabbedContainerOptions, type TabbedContainerTab } from "./components/tabbed-container.js";
-export { type DerivedTable, deriveTableColumns, Table, type TableColumn, type TableOptions } from "./components/table.js";
+export {
+	type DerivedTable,
+	type DeriveTableColumnsOptions,
+	deriveTableColumns,
+	Table,
+	type TableColumn,
+	type TableOptions,
+} from "./components/table.js";
 export { Text, type TextOptions } from "./components/text.js";
 export { Toast, type ToastOptions, type ToastScheduler, type ToastTheme } from "./components/toast.js";
 export { type TreeNode, TreeView, type TreeViewOptions } from "./components/tree-view.js";
