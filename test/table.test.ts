@@ -59,6 +59,74 @@ describe("Table", () => {
 		for (const line of lines) expect(line.length).toBeLessThanOrEqual(20);
 	});
 
+	// Real crash, reported live via Pi's own renderer: "Rendered line N exceeds
+	// terminal width" -- Pi's TUI hard-fails (uncaughtException, whole session
+	// exits) the moment any rendered line is wider than the real terminal.
+	// Root cause: the old shrink pass only ever touched the LAST column,
+	// assuming every other column was already reasonably sized -- true for a
+	// typical 2-3 short-column table, false the moment an auto-derived table
+	// (deriveTableColumns over arbitrary object rows, e.g. Papyrus notes with
+	// a full-text `body` field) puts a huge natural-width column anywhere
+	// OTHER than last. This is Pi's actual rendering rule, not a style
+	// preference -- every column must be capped, not just whichever is last.
+	it("never renders a line wider than the given width, no matter which column is the huge one", () => {
+		const table = new Table({
+			columns: [
+				{ header: "Body", key: "body" }, // huge natural width, NOT the last column
+				{ header: "Id", key: "id" }, // short, and IS the last column
+			],
+			rows: [{ body: "x".repeat(500), id: "abc" }],
+		});
+		const width = 40;
+		const lines = table.render(width);
+		for (const line of lines) expect(line.length).toBeLessThanOrEqual(width);
+	});
+
+	// Closer to the exact real-world shape that crashed: many columns, most
+	// short (id/kind/status/timestamps), a couple of arbitrarily long ones
+	// (title/body) scattered in the middle and not last -- the auto-derived
+	// table Vehicle's generic renderer builds from a notes_list result.
+	it("fits a realistic multi-column table (short id/kind/status columns plus long title/body columns) within a real terminal width", () => {
+		const table = new Table({
+			columns: [
+				{ header: "id", key: "id" },
+				{ header: "kind", key: "kind" },
+				{ header: "title", key: "title" },
+				{ header: "status", key: "status" },
+				{ header: "body", key: "body" },
+				{ header: "created_at", key: "created_at" },
+			],
+			rows: [
+				{
+					id: "4fab0e98-4dcb-4f0f-a529-64dbee2de202",
+					kind: "doc",
+					title: "making Papyrus discuss more robust, allow multi-page discussions, multi-answer",
+					status: "draft",
+					body: "making Papyrus discuss more robust, allow multi-page discussions, multi-answer, allow more complex relationships to playbooks, tasks, docs & rules.",
+					created_at: "2026-08-01T09:40:33.349Z",
+				},
+			],
+		});
+		const width = 179; // the real terminal width from the crash report
+		const lines = table.render(width);
+		for (const line of lines) expect(line.length).toBeLessThanOrEqual(width);
+	});
+
+	// Pathological case: enough columns that even a per-column minimum floor
+	// (kept for readability in the common case) can't be honored within the
+	// given width. Pi's own hard rule -- never render a line wider than the
+	// real terminal, or the whole session crashes -- must win over that
+	// readability floor; an unreadable table beats a crashed session.
+	it("never exceeds the given width even when there are too many columns for any per-column minimum to fit", () => {
+		const columns = Array.from({ length: 50 }, (_, i) => ({ header: `c${i}`, key: `c${i}` }));
+		const row: Record<string, string> = {};
+		for (const col of columns) row[col.key] = `value-${col.key}`;
+		const table = new Table({ columns, rows: [row] });
+		const width = 60; // far too narrow for 50 columns at any sane minimum
+		const lines = table.render(width);
+		for (const line of lines) expect(line.length).toBeLessThanOrEqual(width);
+	});
+
 	it("applies headerStyle and cellStyle when provided", () => {
 		const table = new Table({
 			columns: [{ header: "H", key: "h", width: 3 }],

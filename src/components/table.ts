@@ -67,6 +67,47 @@ function padCell(text: string, width: number, align: "left" | "right", measure: 
 	return align === "right" ? " ".repeat(gap) + text : text + " ".repeat(gap);
 }
 
+const MIN_COLUMN_WIDTH = 4;
+
+/**
+ * Max-min fair-share water-filling: when the columns' natural widths don't
+ * fit in the available budget, every column that's already narrower than an
+ * equal share keeps its natural width, and the leftover budget that frees up
+ * is redistributed evenly among whichever columns still need shrinking --
+ * repeated until every column fits. Shrinking only the LAST column (the
+ * previous approach here) assumed every other column was already reasonably
+ * sized; that's false the moment an auto-derived table (arbitrary object
+ * rows -- e.g. a full-text `body` field) puts an oversized column anywhere
+ * other than last, and Pi's own renderer hard-fails (uncaughtException) the
+ * instant a single rendered line exceeds the real terminal width.
+ *
+ * With minWidth=0 this is exact: the returned widths always sum to <=
+ * budget. A caller wanting a readability floor (MIN_COLUMN_WIDTH) passes it
+ * here first, but that floor can itself push the total over budget once
+ * there are enough columns -- Pi's own "never exceed terminal width" rule
+ * always wins, so the caller retries with minWidth=0 whenever it does.
+ */
+function fitColumnWidths(naturalWidths: number[], budget: number, minWidth: number): number[] {
+	const n = naturalWidths.length;
+	if (n === 0) return [];
+	const order = naturalWidths.map((w, i) => ({ w, i })).sort((a, b) => a.w - b.w);
+	const result = new Array<number>(n);
+	let remaining = Math.max(0, budget);
+	let remainingCount = n;
+	for (const { w, i } of order) {
+		const share = Math.floor(remaining / remainingCount);
+		if (w <= share) {
+			result[i] = w;
+			remaining -= w;
+		} else {
+			result[i] = Math.max(minWidth, share);
+			remaining -= result[i];
+		}
+		remainingCount -= 1;
+	}
+	return result;
+}
+
 /** Renders tabular data (columns and rows) with auto-sized or fixed column widths and a header separator. No scrolling/pagination of its own -- a host embeds this inside a scrollable container for large row counts. */
 export class Table implements Component {
 	private readonly measure: TextMeasure;
@@ -88,18 +129,36 @@ export class Table implements Component {
 		const measure = this.measure;
 		const gap = 2;
 
-		const colWidths = columns.map((col) => {
+		const naturalWidths = columns.map((col) => {
 			if (col.width) return col.width;
 			const headerW = measure.visibleWidth(col.header);
 			const maxCellW = rows.reduce((max, row) => Math.max(max, measure.visibleWidth(row[col.key] ?? "")), 0);
 			return Math.max(headerW, maxCellW);
 		});
 
-		const totalWidth = colWidths.reduce((s, w) => s + w + gap, -gap);
-		if (totalWidth > width && colWidths.length > 0) {
-			const last = colWidths.length - 1;
-			colWidths[last] = Math.max(4, width - (totalWidth - (colWidths[last] as number)));
+		const totalWidth = naturalWidths.reduce((s, w) => s + w + gap, -gap);
+		const gapTotal = Math.max(0, columns.length - 1) * gap;
+		let colWidths = naturalWidths;
+		if (totalWidth > width && columns.length > 0) {
+			colWidths = fitColumnWidths(naturalWidths, width - gapTotal, MIN_COLUMN_WIDTH);
+			// The readability floor above can itself overrun the budget once there
+			// are enough columns (e.g. 50 columns * a 4-char floor already exceeds
+			// a 60-char terminal on its own, before any content). Pi's hard rule
+			// against overwide lines always wins over that floor.
+			if (colWidths.reduce((s, w) => s + w, 0) + gapTotal > width) {
+				colWidths = fitColumnWidths(naturalWidths, width - gapTotal, 0);
+			}
 		}
+
+		// Absolute last resort: column-width fitting above guarantees the fit
+		// whenever there's genuinely enough room for the gaps between columns
+		// alone, but a truly degenerate case (more columns than the terminal
+		// has room for even at zero content width per column, i.e. the fixed
+		// gaps alone exceed the given width) has no valid column-width solution
+		// at all. Pi's own rule (never render a line wider than the real
+		// terminal) is non-negotiable -- an unreadable hard-truncated line
+		// beats crashing the whole session.
+		const clampLine = (line: string): string => (measure.visibleWidth(line) > width ? measure.truncateToWidth(line, width, "") : line);
 
 		const lines: string[] = [];
 
@@ -110,10 +169,10 @@ export class Table implements Component {
 				return headerStyle ? headerStyle(padded) : padded;
 			})
 			.join(" ".repeat(gap));
-		lines.push(headerLine);
+		lines.push(clampLine(headerLine));
 
 		const separator = columns.map((_, i) => this.glyphs.line.thin.repeat(colWidths[i] as number)).join(" ".repeat(gap));
-		lines.push(separator);
+		lines.push(clampLine(separator));
 
 		for (const row of rows) {
 			const rowLine = columns
@@ -124,7 +183,7 @@ export class Table implements Component {
 					return cellStyle ? cellStyle(padded, col.key) : padded;
 				})
 				.join(" ".repeat(gap));
-			lines.push(rowLine);
+			lines.push(clampLine(rowLine));
 		}
 
 		return lines;
