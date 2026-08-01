@@ -9,6 +9,7 @@ export {
 	type BoardTheme,
 } from "./components/board.js";
 export { BorderedSelectPanel, type BorderedSelectPanelOptions, type BorderedSelectPanelTheme } from "./components/bordered-select-panel.js";
+export { BoundedTable, type BoundedTableOptions, renderBoundedTable } from "./components/bounded-table.js";
 export { Collapsible, type CollapsibleOptions } from "./components/collapsible.js";
 export { CollapsibleText, type CollapsibleTextOptions } from "./components/collapsible-text.js";
 export {

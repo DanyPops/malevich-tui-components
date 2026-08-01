@@ -18,8 +18,11 @@
  * text vary per tool and are not this module's concern; keeping them out
  * also keeps this host-agnostic, with no assumption of any particular
  * "press X to expand" keybinding string), this function owns only the
- * truncation arithmetic.
+ * truncation arithmetic (see computeTruncationBounds, shared with
+ * renderBoundedTable's identical row-bounding shape for Table).
  */
+
+import { computeTruncationBounds } from "../truncation.js";
 
 export interface TruncatedListOptions<T> {
 	readonly items: readonly T[];
@@ -37,10 +40,9 @@ export interface TruncatedListOptions<T> {
 /** Builds a truncated list's body lines: the visible items, an optional "... N more" line, and an optional trailing truncation-warning line. Returns `[]` for an empty item list -- the caller renders its own "no results" message instead, since that wording varies per tool. */
 export function renderTruncatedList<T>(options: TruncatedListOptions<T>): string[] {
 	if (options.items.length === 0) return [];
-	const displayCount = options.expanded ? options.items.length : Math.min(options.visibleCount, options.items.length);
+	const { displayCount, hiddenCount } = computeTruncationBounds(options.items.length, options.visibleCount, options.expanded);
 	const lines: string[] = [];
 	for (let index = 0; index < displayCount; index++) lines.push(options.formatItem(options.items[index] as T, index));
-	const hiddenCount = options.items.length - displayCount;
 	if (hiddenCount > 0) lines.push(options.moreLine(hiddenCount));
 	if (options.truncationWarning !== undefined) lines.push(options.truncationWarning);
 	return lines;
