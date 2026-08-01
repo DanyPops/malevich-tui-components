@@ -59,7 +59,12 @@ describe("Envelope", () => {
 	it("invalidate() forwards to the content Component when set", () => {
 		let invalidated = false;
 		const env = new Envelope({ title: "T" });
-		env.setContent({ render: () => [], invalidate: () => { invalidated = true; } });
+		env.setContent({
+			render: () => [],
+			invalidate: () => {
+				invalidated = true;
+			},
+		});
 		env.invalidate();
 		expect(invalidated).toBe(true);
 	});
@@ -90,7 +95,7 @@ describe("Envelope", () => {
 	it("aligns the right border correctly when an ANSI-aware measure is injected", () => {
 		const ansiAwareMeasure = {
 			visibleWidth: (text: string) => stripAnsi(text).length,
-			truncateToWidth: (text: string, maxWidth: number) => text, // not exercised by this fixture
+			truncateToWidth: (text: string, _maxWidth: number) => text, // not exercised by this fixture
 		};
 		const env = new Envelope({ title: "T", collapsed: false, measure: ansiAwareMeasure });
 		env.setContent({ render: () => [ansiOrange("short"), "short"], invalidate: () => {} });

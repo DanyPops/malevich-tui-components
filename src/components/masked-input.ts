@@ -5,7 +5,7 @@
  * handling so a terminal paste isn't silently dropped.
  */
 import type { Component } from "../component.js";
-import { legacyKeyMatcher, type KeyMatcher } from "../key-matcher.js";
+import { type KeyMatcher, legacyKeyMatcher } from "../key-matcher.js";
 
 const PASTE_START = "\x1b[200~";
 const PASTE_END = "\x1b[201~";

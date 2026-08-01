@@ -69,7 +69,7 @@ export function buildDetailLines(width: number, options: BuildDetailLinesOptions
 	const measure = options.measure ?? asciiTextMeasure;
 	const { theme } = options;
 	const wrapWith = (text: string, style: (s: string) => string): string[] =>
-		(text.length === 0 ? [""] : (measure.wrapTextWithAnsi ?? asciiTextMeasure.wrapTextWithAnsi)!(style(text), width));
+		text.length === 0 ? [""] : (measure.wrapTextWithAnsi ?? asciiTextMeasure.wrapTextWithAnsi)!(style(text), width);
 
 	const lines: string[] = [];
 	for (const field of options.fields ?? []) {

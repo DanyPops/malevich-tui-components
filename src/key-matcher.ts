@@ -30,5 +30,5 @@ const LEGACY_SEQUENCES: Record<string, string[]> = {
  */
 export const legacyKeyMatcher: KeyMatcher = (data, keyId) => {
 	const sequences = LEGACY_SEQUENCES[keyId];
-	return sequences !== undefined && sequences.includes(data);
+	return sequences?.includes(data) ?? false;
 };

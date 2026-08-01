@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { asciiGlyphs } from "../src/glyphs.ts";
 import { BorderedSelectPanel } from "../src/components/bordered-select-panel.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
 
 const THEME = { border: (s: string) => s, title: (s: string) => s, help: (s: string) => s };
 
@@ -9,11 +9,19 @@ function fakeList(lines: string[] = ["item 1", "item 2"]) {
 	let invalidated = false;
 	return {
 		lines,
-		get inputReceived() { return inputReceived; },
-		get invalidated() { return invalidated; },
+		get inputReceived() {
+			return inputReceived;
+		},
+		get invalidated() {
+			return invalidated;
+		},
 		render: () => lines,
-		handleInput: (data: string) => { inputReceived = data; },
-		invalidate: () => { invalidated = true; },
+		handleInput: (data: string) => {
+			inputReceived = data;
+		},
+		invalidate: () => {
+			invalidated = true;
+		},
 	};
 }
 

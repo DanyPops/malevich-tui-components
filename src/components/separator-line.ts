@@ -5,7 +5,7 @@
  * replaced by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
-import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export type SeparatorWeight = "thick" | "thin" | "dotted" | "dashed";
@@ -96,9 +96,7 @@ export class SeparatorLine implements Component {
 			rightW = this.measure.visibleWidth(right);
 		}
 		const fill = Math.max(0, width - 1 - leftW - rightW - 1);
-		return [
-			this.style(char.repeat(1)) + left + this.style(char.repeat(fill)) + right + this.style(char.repeat(1)),
-		];
+		return [this.style(char.repeat(1)) + left + this.style(char.repeat(fill)) + right + this.style(char.repeat(1))];
 	}
 
 	private fitPaddedLabel(label: string, maxPaddedWidth: number): string {

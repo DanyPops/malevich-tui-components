@@ -55,14 +55,28 @@ describe("Board", () => {
 
 	it("enter calls onSelect with the currently selected item", () => {
 		let selected: string | undefined;
-		const board = new Board({ columns: columns(), renderItem, theme: THEME, onSelect: (item) => { selected = item; } });
+		const board = new Board({
+			columns: columns(),
+			renderItem,
+			theme: THEME,
+			onSelect: (item) => {
+				selected = item;
+			},
+		});
 		board.handleInput("\r");
 		expect(selected).toBe("a1");
 	});
 
 	it("escape calls onClose", () => {
 		let closed = false;
-		const board = new Board({ columns: columns(), renderItem, theme: THEME, onClose: () => { closed = true; } });
+		const board = new Board({
+			columns: columns(),
+			renderItem,
+			theme: THEME,
+			onClose: () => {
+				closed = true;
+			},
+		});
 		board.handleInput("\x1b");
 		expect(closed).toBe(true);
 	});
@@ -79,7 +93,7 @@ describe("Board", () => {
 		expect(ranges[0]).toHaveLength(2); // column A has 2 items
 		expect(ranges[1]).toHaveLength(1); // column B has 1 item
 		expect(ranges[2]).toHaveLength(0); // column C is empty
-		expect(ranges[0]?.[1]!.start).toBeGreaterThan(ranges[0]?.[0]!.end ?? -1);
+		expect(ranges[0]?.[1]?.start).toBeGreaterThan(ranges[0]?.[0]?.end ?? -1);
 	});
 
 	it("pads every rendered row to the same total width, keeping columns aligned", () => {

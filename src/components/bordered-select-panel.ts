@@ -5,7 +5,7 @@
  * host's own SelectList) and delegates handleInput/invalidate to it.
  */
 import type { Component } from "../component.js";
-import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 import { renderFramedPanel } from "./framed-panel.js";
 

@@ -3,7 +3,13 @@ import { renderTruncatedList } from "../src/components/truncated-list.js";
 
 describe("renderTruncatedList", () => {
 	it("returns an empty array for an empty item list -- the caller decides its own empty-state message", () => {
-		const lines = renderTruncatedList({ items: [], expanded: false, visibleCount: 10, formatItem: (n: number) => String(n), moreLine: (n) => `+${n}` });
+		const lines = renderTruncatedList({
+			items: [],
+			expanded: false,
+			visibleCount: 10,
+			formatItem: (n: number) => String(n),
+			moreLine: (n) => `+${n}`,
+		});
 		expect(lines).toEqual([]);
 	});
 
@@ -102,7 +108,13 @@ describe("renderTruncatedList", () => {
 	});
 
 	it("omits the truncation warning entirely when not given", () => {
-		const lines = renderTruncatedList({ items: [1], expanded: false, visibleCount: 10, formatItem: (n) => String(n), moreLine: (n) => `+${n}` });
+		const lines = renderTruncatedList({
+			items: [1],
+			expanded: false,
+			visibleCount: 10,
+			formatItem: (n) => String(n),
+			moreLine: (n) => `+${n}`,
+		});
 		expect(lines).toEqual(["1"]);
 	});
 

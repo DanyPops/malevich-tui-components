@@ -51,7 +51,14 @@ describe("Toast", () => {
 	it("calls onExpire when the timer fires", () => {
 		const scheduler = fakeScheduler();
 		let expired = false;
-		const toast = new Toast({ message: "hi", theme: THEME, scheduler, onExpire: () => { expired = true; } });
+		const _toast = new Toast({
+			message: "hi",
+			theme: THEME,
+			scheduler,
+			onExpire: () => {
+				expired = true;
+			},
+		});
 		scheduler.fire();
 		expect(expired).toBe(true);
 	});
@@ -66,14 +73,25 @@ describe("Toast", () => {
 
 	it("never schedules a timer when durationMs is 0 or negative -- never auto-expires", () => {
 		let scheduled = false;
-		const scheduler: ToastScheduler = { setTimeout: () => { scheduled = true; return undefined; }, clearTimeout: () => {} };
+		const scheduler: ToastScheduler = {
+			setTimeout: () => {
+				scheduled = true;
+				return undefined;
+			},
+			clearTimeout: () => {},
+		};
 		new Toast({ message: "hi", theme: THEME, scheduler, durationMs: -1 });
 		expect(scheduled).toBe(false);
 	});
 
 	it("invalidate() forwards to a wrapped content Component", () => {
 		let invalidated = false;
-		const content = { render: () => [], invalidate: () => { invalidated = true; } };
+		const content = {
+			render: () => [],
+			invalidate: () => {
+				invalidated = true;
+			},
+		};
 		const toast = new Toast({ content, theme: THEME, scheduler: fakeScheduler() });
 		toast.invalidate();
 		expect(invalidated).toBe(true);

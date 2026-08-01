@@ -1,7 +1,13 @@
 import { describe, expect, it } from "bun:test";
 import { Menu } from "../src/components/menu.ts";
 
-const THEME = { border: (s: string) => s, selected: (s: string) => `>${s}`, normal: (s: string) => s, dim: (s: string) => s, title: (s: string) => s };
+const THEME = {
+	border: (s: string) => s,
+	selected: (s: string) => `>${s}`,
+	normal: (s: string) => s,
+	dim: (s: string) => s,
+	title: (s: string) => s,
+};
 
 function items(actions: Array<() => void> = []) {
 	return [
@@ -49,21 +55,42 @@ describe("Menu", () => {
 
 	it("Enter runs the selected item's action", () => {
 		let ran = false;
-		const menu = new Menu({ items: items([() => { ran = true; }]), theme: THEME });
+		const menu = new Menu({
+			items: items([
+				() => {
+					ran = true;
+				},
+			]),
+			theme: THEME,
+		});
 		menu.handleInput("\r");
 		expect(ran).toBe(true);
 	});
 
 	it("a direct shortcut key runs that item's action regardless of current selection", () => {
 		let ran = false;
-		const menu = new Menu({ items: items([() => {}, () => { ran = true; }]), theme: THEME });
+		const menu = new Menu({
+			items: items([
+				() => {},
+				() => {
+					ran = true;
+				},
+			]),
+			theme: THEME,
+		});
 		menu.handleInput("s");
 		expect(ran).toBe(true);
 	});
 
 	it("Escape and q both invoke onClose", () => {
 		let closes = 0;
-		const menu = new Menu({ items: items(), theme: THEME, onClose: () => { closes++; } });
+		const menu = new Menu({
+			items: items(),
+			theme: THEME,
+			onClose: () => {
+				closes++;
+			},
+		});
 		menu.handleInput("\x1b");
 		menu.handleInput("q");
 		expect(closes).toBe(2);

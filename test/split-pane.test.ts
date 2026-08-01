@@ -41,8 +41,18 @@ describe("SplitPane", () => {
 		let leftInvalidated = false;
 		let rightInvalidated = false;
 		const pane = new SplitPane(
-			{ render: () => [], invalidate: () => { leftInvalidated = true; } },
-			{ render: () => [], invalidate: () => { rightInvalidated = true; } },
+			{
+				render: () => [],
+				invalidate: () => {
+					leftInvalidated = true;
+				},
+			},
+			{
+				render: () => [],
+				invalidate: () => {
+					rightInvalidated = true;
+				},
+			},
 		);
 		pane.invalidate();
 		expect(leftInvalidated).toBe(true);

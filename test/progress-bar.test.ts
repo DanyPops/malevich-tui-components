@@ -74,8 +74,16 @@ describe("ProgressBar", () => {
 	it("uses a custom TextMeasure when provided", () => {
 		let measured = 0;
 		const bar = new ProgressBar({
-			value: 1, max: 1, label: "x",
-			measure: { visibleWidth: (s) => { measured++; return s.length; }, truncateToWidth: (s) => s },
+			value: 1,
+			max: 1,
+			label: "x",
+			measure: {
+				visibleWidth: (s) => {
+					measured++;
+					return s.length;
+				},
+				truncateToWidth: (s) => s,
+			},
 		});
 		bar.render(80);
 		expect(measured).toBeGreaterThan(0);

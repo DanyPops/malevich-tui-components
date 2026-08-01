@@ -23,7 +23,10 @@ export class ScrollView implements Component {
 	private readonly measure: TextMeasure;
 	private readonly matchesKey: KeyMatcher;
 
-	constructor(private child: Component, opts: ScrollViewOptions = {}) {
+	constructor(
+		private child: Component,
+		opts: ScrollViewOptions = {},
+	) {
 		this.maxHeight = opts.maxHeight ?? 20;
 		this.showScrollbar = opts.showScrollbar ?? true;
 		this.measure = opts.measure ?? asciiTextMeasure;
@@ -52,10 +55,22 @@ export class ScrollView implements Component {
 	}
 
 	handleInput(data: string): void {
-		if (data === "j" || this.matchesKey(data, "down")) { this.scrollDown(); return; }
-		if (data === "k" || this.matchesKey(data, "up")) { this.scrollUp(); return; }
-		if (data === "g") { this.scrollToTop(); return; }
-		if (data === "G") { this.scrollToBottom(); return; }
+		if (data === "j" || this.matchesKey(data, "down")) {
+			this.scrollDown();
+			return;
+		}
+		if (data === "k" || this.matchesKey(data, "up")) {
+			this.scrollUp();
+			return;
+		}
+		if (data === "g") {
+			this.scrollToTop();
+			return;
+		}
+		if (data === "G") {
+			this.scrollToBottom();
+			return;
+		}
 	}
 
 	render(width: number): string[] {

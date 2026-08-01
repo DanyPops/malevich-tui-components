@@ -71,9 +71,7 @@ export function findMnemonicConflicts(root: MnemonicContext): MnemonicConflict[]
 
 /** Formats a conflict list into one readable, actionable multi-line message. */
 export function formatMnemonicConflicts(conflicts: MnemonicConflict[]): string {
-	return conflicts
-		.map((c) => `key ${JSON.stringify(c.key)} in ${c.path.join(" > ")}: ${c.descriptions.join(" vs. ")}`)
-		.join("\n");
+	return conflicts.map((c) => `key ${JSON.stringify(c.key)} in ${c.path.join(" > ")}: ${c.descriptions.join(" vs. ")}`).join("\n");
 }
 
 /** Throws with a formatted, actionable message if any conflict exists --

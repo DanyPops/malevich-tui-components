@@ -76,7 +76,9 @@ export class TabMenu<T> implements Component {
 		const { theme } = this.opts;
 		const breadcrumb = this.getBreadcrumb();
 		const prefix = breadcrumb.length > 0 ? `${theme.breadcrumb(`${breadcrumb.join(" \u203a ")} \u203a`)} ` : "";
-		const tabs = level.nodes.map((node, i) => (i === level.index ? theme.activeTab(` ${node.label} `) : theme.tab(` ${node.label} `))).join(" ");
+		const tabs = level.nodes
+			.map((node, i) => (i === level.index ? theme.activeTab(` ${node.label} `) : theme.tab(` ${node.label} `)))
+			.join(" ");
 
 		const lines = [prefix + tabs];
 		const current = level.nodes[level.index];

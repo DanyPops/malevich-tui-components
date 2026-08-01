@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import {
 	buildContextRows,
-	renderContextRowLines,
-	renderContextUsageBar,
 	type ContextBarTheme,
 	type ContextRowsTheme,
 	type ContextSegment,
+	renderContextRowLines,
+	renderContextUsageBar,
 } from "../src/components/context-breakdown.ts";
 
 const ROWS_THEME: ContextRowsTheme = {
@@ -40,7 +40,15 @@ describe("buildContextRows", () => {
 
 	it("sorts items biggest-first and computes each segment's percent against the real total, not the segment sum", () => {
 		const segments: ContextSegment[] = [
-			{ key: "a", label: "A", estimatedTokens: 100, items: [{ label: "small", estimatedTokens: 10 }, { label: "big", estimatedTokens: 90 }] },
+			{
+				key: "a",
+				label: "A",
+				estimatedTokens: 100,
+				items: [
+					{ label: "small", estimatedTokens: 10 },
+					{ label: "big", estimatedTokens: 90 },
+				],
+			},
 		];
 		const rows = buildContextRows(segments, 1000); // real total far larger than the segment's own 100
 		expect(rows[0]!.text).toContain("(10.0%)"); // 100/1000, not 100/100
@@ -54,16 +62,24 @@ describe("buildContextRows", () => {
 				key: "messageHistory",
 				label: "History",
 				estimatedTokens: 300,
-				items: [{ label: "branch-1", estimatedTokens: 300, children: [{ label: "leaf-a", estimatedTokens: 100 }, { label: "leaf-b", estimatedTokens: 200 }] }],
+				items: [
+					{
+						label: "branch-1",
+						estimatedTokens: 300,
+						children: [
+							{ label: "leaf-a", estimatedTokens: 100 },
+							{ label: "leaf-b", estimatedTokens: 200 },
+						],
+					},
+				],
 			},
 		];
 		const rows = buildContextRows(segments);
-		expect(rows.map((r) => r.text.includes("leaf-b") ? "leaf-b" : r.text.includes("leaf-a") ? "leaf-a" : r.text.includes("branch-1") ? "branch-1" : "header")).toEqual([
-			"header",
-			"branch-1",
-			"leaf-b",
-			"leaf-a",
-		]);
+		expect(
+			rows.map((r) =>
+				r.text.includes("leaf-b") ? "leaf-b" : r.text.includes("leaf-a") ? "leaf-a" : r.text.includes("branch-1") ? "branch-1" : "header",
+			),
+		).toEqual(["header", "branch-1", "leaf-b", "leaf-a"]);
 		expect(rows[2]!.depth).toBe(2);
 	});
 });
@@ -91,7 +107,10 @@ describe("renderContextUsageBar", () => {
 	});
 
 	it("splits used cells proportionally across segments and fills the remainder as empty, honoring a real capacity distinct from the segment sum", () => {
-		const segments: ContextSegment[] = [{ key: "a", label: "A", estimatedTokens: 90 }, { key: "b", label: "B", estimatedTokens: 10 }];
+		const segments: ContextSegment[] = [
+			{ key: "a", label: "A", estimatedTokens: 90 },
+			{ key: "b", label: "B", estimatedTokens: 10 },
+		];
 		const bar = renderContextUsageBar(BAR_THEME, segments, 20, 200, 100); // 100/200 = half the bar used
 		const usedCells = (bar.match(/█/g) ?? []).length;
 		const emptyCells = (bar.match(/░/g) ?? []).length;
@@ -100,7 +119,10 @@ describe("renderContextUsageBar", () => {
 	});
 
 	it("guarantees a tiny nonzero segment still gets at least one visible cell next to a much larger one", () => {
-		const segments: ContextSegment[] = [{ key: "big", label: "Big", estimatedTokens: 9_999 }, { key: "tiny", label: "Tiny", estimatedTokens: 1 }];
+		const segments: ContextSegment[] = [
+			{ key: "big", label: "Big", estimatedTokens: 9_999 },
+			{ key: "tiny", label: "Tiny", estimatedTokens: 1 },
+		];
 		const bar = renderContextUsageBar(BAR_THEME, segments, 10);
 		expect(bar).toContain("[tiny]");
 	});

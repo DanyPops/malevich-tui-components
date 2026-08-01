@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { asciiGlyphs } from "../src/glyphs.ts";
 import { SeparatorLine } from "../src/components/separator-line.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
 
 describe("SeparatorLine", () => {
 	it("renders a plain full-width rule with no labels", () => {

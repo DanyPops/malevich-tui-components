@@ -36,19 +36,17 @@ describe("buildDetailLines", () => {
 	it("a thread section gives each item its own leading blank line, byline, then body", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
-			sections: [{
-				heading: "Comments (2):",
-				items: [
-					{ byline: "Alice · 2024-01-01", body: "First comment" },
-					{ byline: "Bob · 2024-01-02", body: "Second comment" },
-				],
-			}],
+			sections: [
+				{
+					heading: "Comments (2):",
+					items: [
+						{ byline: "Alice · 2024-01-01", body: "First comment" },
+						{ byline: "Bob · 2024-01-02", body: "Second comment" },
+					],
+				},
+			],
 		});
-		expect(lines).toEqual([
-			"", "Comments (2):",
-			"", "Alice · 2024-01-01", "First comment",
-			"", "Bob · 2024-01-02", "Second comment",
-		]);
+		expect(lines).toEqual(["", "Comments (2):", "", "Alice · 2024-01-01", "First comment", "", "Bob · 2024-01-02", "Second comment"]);
 	});
 
 	it("a thread item without a byline skips just that line, not the blank or the body", () => {
@@ -88,11 +86,7 @@ describe("buildDetailLines", () => {
 			fields: [{ label: "Status", value: "todo" }],
 			sections: [{ heading: "Comments (1):", items: [{ byline: "Alice", body: "Hi" }] }],
 		});
-		expect(lines).toEqual([
-			"[field]Status: todo",
-			"", "[heading]Comments (1):",
-			"", "[byline]Alice", "[body]Hi",
-		]);
+		expect(lines).toEqual(["[field]Status: todo", "", "[heading]Comments (1):", "", "[byline]Alice", "[body]Hi"]);
 	});
 
 	it("a `lines` section renders its flat rows directly under the heading, with no blank line between them", () => {

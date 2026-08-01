@@ -1,12 +1,18 @@
 import { describe, expect, it } from "bun:test";
-import { asciiGlyphs } from "../src/glyphs.ts";
 import { deriveTableColumns, Table } from "../src/components/table.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
 
 describe("Table", () => {
 	it("renders a header, separator, and one line per row", () => {
 		const table = new Table({
-			columns: [{ header: "Engine", key: "engine" }, { header: "Credits", key: "credits" }],
-			rows: [{ engine: "tavily", credits: "2" }, { engine: "brave", credits: "0" }],
+			columns: [
+				{ header: "Engine", key: "engine" },
+				{ header: "Credits", key: "credits" },
+			],
+			rows: [
+				{ engine: "tavily", credits: "2" },
+				{ engine: "brave", credits: "0" },
+			],
 		});
 		const lines = table.render(80);
 		expect(lines).toHaveLength(4); // header + separator + 2 rows
@@ -96,9 +102,15 @@ describe("Table", () => {
 	// body field was a real multi-line note.
 	it("strips embedded newlines from cell content instead of letting them survive into a rendered line", () => {
 		const table = new Table({
-			columns: [{ header: "id", key: "id" }, { header: "body", key: "body" }],
+			columns: [
+				{ header: "id", key: "id" },
+				{ header: "body", key: "body" },
+			],
 			rows: [
-				{ id: "a", body: "Hi\nThis is the rest of a very long multi-line note body that goes on and on and on and on for quite a while to force truncation mid-way through, well past the embedded newline character at the start." },
+				{
+					id: "a",
+					body: "Hi\nThis is the rest of a very long multi-line note body that goes on and on and on and on for quite a while to force truncation mid-way through, well past the embedded newline character at the start.",
+				},
 				{ id: "b", body: "Short." },
 			],
 		});
@@ -180,7 +192,10 @@ describe("Table", () => {
 			columns: [{ header: "X", key: "x" }],
 			rows: [{ x: "y" }],
 			measure: {
-				visibleWidth: (s) => { measured++; return s.length; },
+				visibleWidth: (s) => {
+					measured++;
+					return s.length;
+				},
 				truncateToWidth: (s) => s,
 			},
 		});
@@ -218,12 +233,18 @@ describe("deriveTableColumns", () => {
 	});
 
 	it("unions keys across items and derives one column per key", () => {
-		const derived = deriveTableColumns([{ id: "1", title: "First" }, { id: "2", extra: true }]);
+		const derived = deriveTableColumns([
+			{ id: "1", title: "First" },
+			{ id: "2", extra: true },
+		]);
 		expect(derived?.columns.map((c) => c.key).sort()).toEqual(["extra", "id", "title"]);
 	});
 
 	it("keeps string values as-is and JSON-stringifies non-string values, filling missing keys with an empty string", () => {
-		const derived = deriveTableColumns([{ id: "1", title: "First", tags: ["a", "b"] }, { id: "2", title: "Second" }]);
+		const derived = deriveTableColumns([
+			{ id: "1", title: "First", tags: ["a", "b"] },
+			{ id: "2", title: "Second" },
+		]);
 		expect(derived?.rows).toEqual([
 			{ id: "1", title: "First", tags: '["a","b"]' },
 			{ id: "2", title: "Second", tags: "" },

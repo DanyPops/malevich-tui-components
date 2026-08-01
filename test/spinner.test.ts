@@ -28,7 +28,9 @@ describe("Spinner", () => {
 		const spinner = new Spinner();
 		const initial = spinner.glyph();
 		let ticks = 0;
-		spinner.start(() => { ticks += 1; });
+		spinner.start(() => {
+			ticks += 1;
+		});
 		await new Promise((resolve) => setTimeout(resolve, 250));
 		spinner.stop();
 		expect(ticks).toBeGreaterThan(0);
@@ -37,13 +39,18 @@ describe("Spinner", () => {
 
 	it("stop() is safe to call before start(), and more than once", () => {
 		const spinner = new Spinner();
-		expect(() => { spinner.stop(); spinner.stop(); }).not.toThrow();
+		expect(() => {
+			spinner.stop();
+			spinner.stop();
+		}).not.toThrow();
 	});
 
 	it("stop() actually halts the interval -- no further ticks after stopping", async () => {
 		const spinner = new Spinner();
 		let ticks = 0;
-		spinner.start(() => { ticks += 1; });
+		spinner.start(() => {
+			ticks += 1;
+		});
 		await new Promise((resolve) => setTimeout(resolve, 100));
 		spinner.stop();
 		const ticksAtStop = ticks;
@@ -54,8 +61,12 @@ describe("Spinner", () => {
 	it("start() is idempotent -- calling it again restarts cleanly instead of stacking a second interval", async () => {
 		const spinner = new Spinner();
 		let ticks = 0;
-		spinner.start(() => { ticks += 1; });
-		spinner.start(() => { ticks += 1; }); // must not leave the first interval running too
+		spinner.start(() => {
+			ticks += 1;
+		});
+		spinner.start(() => {
+			ticks += 1;
+		}); // must not leave the first interval running too
 		await new Promise((resolve) => setTimeout(resolve, 250));
 		const ticksAtOneRunning = ticks;
 		spinner.stop();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { asciiGlyphs } from "../src/glyphs.ts";
 import { Dialog } from "../src/components/dialog.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
 
 const THEME = { border: (s: string) => s, title: (s: string) => s, body: (s: string) => s, dim: (s: string) => s };
 
@@ -9,7 +9,10 @@ describe("Dialog", () => {
 		const dialog = new Dialog({
 			title: "Confirm",
 			body: "Are you sure?",
-			actions: [{ label: "Yes", key: "y", action: () => {} }, { label: "No", key: "n", action: () => {} }],
+			actions: [
+				{ label: "Yes", key: "y", action: () => {} },
+				{ label: "No", key: "n", action: () => {} },
+			],
 			theme: THEME,
 		});
 		const lines = dialog.render(40);
@@ -35,21 +38,60 @@ describe("Dialog", () => {
 
 	it("invokes the matching action's callback on its key, case-insensitively", () => {
 		let called = false;
-		const dialog = new Dialog({ title: "T", body: "b", actions: [{ label: "Yes", key: "y", action: () => { called = true; } }], theme: THEME });
+		const dialog = new Dialog({
+			title: "T",
+			body: "b",
+			actions: [
+				{
+					label: "Yes",
+					key: "y",
+					action: () => {
+						called = true;
+					},
+				},
+			],
+			theme: THEME,
+		});
 		dialog.handleInput("Y");
 		expect(called).toBe(true);
 	});
 
 	it("does nothing for a key with no matching action", () => {
 		let called = false;
-		const dialog = new Dialog({ title: "T", body: "b", actions: [{ label: "Yes", key: "y", action: () => { called = true; } }], theme: THEME });
+		const dialog = new Dialog({
+			title: "T",
+			body: "b",
+			actions: [
+				{
+					label: "Yes",
+					key: "y",
+					action: () => {
+						called = true;
+					},
+				},
+			],
+			theme: THEME,
+		});
 		dialog.handleInput("z");
 		expect(called).toBe(false);
 	});
 
-	it("Escape invokes the action keyed \"n\" or \"Esc\", if any", () => {
+	it('Escape invokes the action keyed "n" or "Esc", if any', () => {
 		let called = false;
-		const dialog = new Dialog({ title: "T", body: "b", actions: [{ label: "No", key: "n", action: () => { called = true; } }], theme: THEME });
+		const dialog = new Dialog({
+			title: "T",
+			body: "b",
+			actions: [
+				{
+					label: "No",
+					key: "n",
+					action: () => {
+						called = true;
+					},
+				},
+			],
+			theme: THEME,
+		});
 		dialog.handleInput("\x1b");
 		expect(called).toBe(true);
 	});
@@ -70,7 +112,13 @@ describe("Dialog", () => {
 	// confirmed live as a real user-reported bug: two horizontal rules landed
 	// back to back, immediately inside the Envelope's own top/bottom border.
 	it("omits its own top/bottom rule when framed is false, keeping title/body/hints", () => {
-		const dialog = new Dialog({ title: "Confirm", body: "Are you sure?", actions: [{ label: "Yes", key: "y", action: () => {} }], theme: THEME, framed: false });
+		const dialog = new Dialog({
+			title: "Confirm",
+			body: "Are you sure?",
+			actions: [{ label: "Yes", key: "y", action: () => {} }],
+			theme: THEME,
+			framed: false,
+		});
 		const lines = dialog.render(40);
 		expect(lines[0]).not.toBe("─".repeat(40));
 		expect(lines[lines.length - 1]).not.toBe("─".repeat(40));
@@ -91,7 +139,15 @@ describe("Dialog", () => {
 		const dialog = new Dialog({
 			title: "T",
 			body: "b",
-			actions: [{ label: "No", key: "n", action: () => { called = true; } }],
+			actions: [
+				{
+					label: "No",
+					key: "n",
+					action: () => {
+						called = true;
+					},
+				},
+			],
 			theme: THEME,
 			matchesKey: (data, keyId) => keyId === "escape" && data === "CUSTOM_ESCAPE",
 		});

@@ -5,7 +5,7 @@
  * dependency on any specific host TUI package.
  */
 import type { Component } from "../component.js";
-import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface TableColumn {

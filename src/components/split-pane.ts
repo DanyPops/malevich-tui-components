@@ -22,7 +22,11 @@ export class SplitPane implements Component {
 	private readonly minRightWidth: number;
 	private readonly measure: TextMeasure;
 
-	constructor(private left: Component, private right: Component, opts: SplitPaneOptions = {}) {
+	constructor(
+		private left: Component,
+		private right: Component,
+		opts: SplitPaneOptions = {},
+	) {
 		this.ratio = opts.ratio ?? 0.5;
 		this.borderChar = opts.borderChar ?? "│";
 		this.minLeftWidth = opts.minLeftWidth ?? 10;

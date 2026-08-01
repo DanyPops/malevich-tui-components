@@ -93,7 +93,12 @@ export interface ContextRowsTheme {
 }
 
 /** Renders each row with its colored gutter, indentation, and header styling -- plain strings, truncated to `width`. Owns no scrolling or border chrome. */
-export function renderContextRowLines(rows: readonly ContextRow[], width: number, theme: ContextRowsTheme, measure: TextMeasure = asciiTextMeasure): string[] {
+export function renderContextRowLines(
+	rows: readonly ContextRow[],
+	width: number,
+	theme: ContextRowsTheme,
+	measure: TextMeasure = asciiTextMeasure,
+): string[] {
 	const gutter = theme.gutter ?? "▌";
 	return rows.map((row) => {
 		const indent = "  ".repeat(row.depth);
@@ -145,14 +150,23 @@ export interface ContextBarTheme {
  * own estimated share of each other (via distributeCells, which also guarantees a tiny nonzero
  * segment stays visible rather than rounding to nothing next to a much larger one).
  */
-export function renderContextUsageBar(theme: ContextBarTheme, segments: readonly ContextSegment[], width: number, capacity?: number, usedTokens?: number): string {
+export function renderContextUsageBar(
+	theme: ContextBarTheme,
+	segments: readonly ContextSegment[],
+	width: number,
+	capacity?: number,
+	usedTokens?: number,
+): string {
 	const estimatedSum = segments.reduce((sum, segment) => sum + segment.estimatedTokens, 0);
 	if (estimatedSum <= 0 || width <= 0) return theme.empty("░".repeat(Math.max(0, width)));
 	const realUsed = usedTokens ?? estimatedSum;
 	const usedWidth = capacity !== undefined ? Math.max(0, Math.min(width, Math.round((realUsed / capacity) * width))) : width;
 
 	const nonZero = segments.filter((segment) => segment.estimatedTokens > 0);
-	const cellCounts = distributeCells(nonZero.map((segment) => segment.estimatedTokens), usedWidth);
+	const cellCounts = distributeCells(
+		nonZero.map((segment) => segment.estimatedTokens),
+		usedWidth,
+	);
 	let output = "";
 	nonZero.forEach((segment, index) => {
 		const cells = cellCounts[index] ?? 0;

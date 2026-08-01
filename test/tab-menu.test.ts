@@ -50,14 +50,26 @@ describe("TabMenu", () => {
 
 	it("enter on a leaf node resolves onSelect with its value", () => {
 		let selected: string | undefined;
-		const menu = new TabMenu({ nodes: tree(), theme: THEME, onSelect: (v) => { selected = v; } });
+		const menu = new TabMenu({
+			nodes: tree(),
+			theme: THEME,
+			onSelect: (v) => {
+				selected = v;
+			},
+		});
 		menu.handleInput("\r");
 		expect(selected).toBe("github:issues");
 	});
 
 	it("enter on a branch node walks down into its children instead of resolving", () => {
 		let selected: string | undefined;
-		const menu = new TabMenu({ nodes: tree(), theme: THEME, onSelect: (v) => { selected = v; } });
+		const menu = new TabMenu({
+			nodes: tree(),
+			theme: THEME,
+			onSelect: (v) => {
+				selected = v;
+			},
+		});
 		menu.handleInput("\t"); // -> Jira
 		menu.handleInput("\r"); // descend
 		expect(selected).toBeUndefined();
@@ -85,19 +97,37 @@ describe("TabMenu", () => {
 
 	it("a mnemonic jumps to and activates its node in one step -- resolving a leaf, or descending a branch", () => {
 		let selected: string | undefined;
-		const menu = new TabMenu({ nodes: tree(), theme: THEME, onSelect: (v) => { selected = v; } });
+		const menu = new TabMenu({
+			nodes: tree(),
+			theme: THEME,
+			onSelect: (v) => {
+				selected = v;
+			},
+		});
 		menu.handleInput("j"); // Jira has children -- descends, does not resolve
 		expect(selected).toBeUndefined();
 		expect(menu.getCurrentNode()?.label).toBe("Issues");
 
-		const leafMenu = new TabMenu({ nodes: tree(), theme: THEME, onSelect: (v) => { selected = v; } });
+		const leafMenu = new TabMenu({
+			nodes: tree(),
+			theme: THEME,
+			onSelect: (v) => {
+				selected = v;
+			},
+		});
 		leafMenu.handleInput("h"); // GitHub is a leaf -- resolves immediately
 		expect(selected).toBe("github:issues");
 	});
 
 	it("an unrecognized mnemonic is a no-op", () => {
 		let selected: string | undefined;
-		const menu = new TabMenu({ nodes: tree(), theme: THEME, onSelect: (v) => { selected = v; } });
+		const menu = new TabMenu({
+			nodes: tree(),
+			theme: THEME,
+			onSelect: (v) => {
+				selected = v;
+			},
+		});
 		menu.handleInput("z");
 		expect(selected).toBeUndefined();
 		expect(menu.getCurrentNode()?.label).toBe("GitHub");

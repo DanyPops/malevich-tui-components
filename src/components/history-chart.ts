@@ -145,13 +145,14 @@ export class HistoryChart implements Component {
 		const maximum = Math.max(grandTotal, budget ?? 0);
 
 		const observed = opts.truncated ? `at least ${opts.formatValue(grandTotal)}` : opts.formatValue(grandTotal);
-		const budgetState = budget === undefined
-			? `${observed}${unitSuffix} · budget not configured${opts.truncated ? " · query limit reached" : ""}`
-			: grandTotal > budget
-				? `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · OVER BUDGET by ${opts.truncated ? "at least " : ""}${opts.formatValue(grandTotal - budget)}`
-				: opts.truncated
-					? `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · state unknown · query limit reached`
-					: `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · ${opts.formatValue(budget - grandTotal)} remaining`;
+		const budgetState =
+			budget === undefined
+				? `${observed}${unitSuffix} · budget not configured${opts.truncated ? " · query limit reached" : ""}`
+				: grandTotal > budget
+					? `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · OVER BUDGET by ${opts.truncated ? "at least " : ""}${opts.formatValue(grandTotal - budget)}`
+					: opts.truncated
+						? `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · state unknown · query limit reached`
+						: `${observed}${unitSuffix} / ${opts.formatValue(budget)} budget · ${opts.formatValue(budget - grandTotal)} remaining`;
 
 		const lines = [
 			measure.truncateToWidth(opts.theme.title(opts.title), safeWidth, ""),
@@ -197,7 +198,9 @@ export class HistoryChart implements Component {
 			lines.push(`${label.padStart(this.yAxisWidth - 2)} ${opts.theme.axis("│")}${plot}`);
 		}
 		lines.push(`${"0".padStart(this.yAxisWidth - 2)} ${opts.theme.axis(`└${"─".repeat(plotWidth)}`)}`);
-		lines.push(`${" ".repeat(this.yAxisWidth)}${opts.theme.axis(this.axisLabels((opts.buckets[0]?.start ?? 0), (opts.buckets[opts.buckets.length - 1]?.end ?? 0), plotWidth))}`);
+		lines.push(
+			`${" ".repeat(this.yAxisWidth)}${opts.theme.axis(this.axisLabels(opts.buckets[0]?.start ?? 0, opts.buckets[opts.buckets.length - 1]?.end ?? 0, plotWidth))}`,
+		);
 		lines.push("");
 
 		const displayedSeries = opts.series.slice(0, this.maxSeriesShown);
@@ -208,7 +211,9 @@ export class HistoryChart implements Component {
 			lines.push(measure.truncateToWidth(`${bullet} ${series.label}  ${opts.formatValue(seriesTotal)}`, safeWidth, "…"));
 		}
 		if (opts.series.length > displayedSeries.length) {
-			lines.push(measure.truncateToWidth(opts.theme.muted(`… ${opts.series.length - displayedSeries.length} more series omitted`), safeWidth, "…"));
+			lines.push(
+				measure.truncateToWidth(opts.theme.muted(`… ${opts.series.length - displayedSeries.length} more series omitted`), safeWidth, "…"),
+			);
 		}
 
 		return lines.map((line) => (measure.visibleWidth(line) <= safeWidth ? line : measure.truncateToWidth(line, safeWidth, "…")));

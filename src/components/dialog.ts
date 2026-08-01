@@ -4,7 +4,7 @@
  * by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
-import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";

@@ -18,7 +18,9 @@ function textField() {
 	let value = "";
 	return {
 		getValue: () => value,
-		handleInput: (data: string) => { if (data.length === 1 && data.charCodeAt(0) >= 32) value += data; },
+		handleInput: (data: string) => {
+			if (data.length === 1 && data.charCodeAt(0) >= 32) value += data;
+		},
 		render: () => [value],
 	};
 }
@@ -27,7 +29,13 @@ describe("Form", () => {
 	it("starts focused on the first field and moves forward on Tab, backward on Shift+Tab", () => {
 		const a = textField();
 		const b = textField();
-		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: a }, { key: "b", label: "B", input: b }] });
+		const form = new Form({
+			theme: THEME,
+			fields: [
+				{ key: "a", label: "A", input: a },
+				{ key: "b", label: "B", input: b },
+			],
+		});
 		type(form, "1");
 		form.handleInput(TAB);
 		type(form, "2");
@@ -41,9 +49,14 @@ describe("Form", () => {
 		let submitted = false;
 		const form = new Form({
 			theme: THEME,
-			fields: [{ key: "a", label: "A", input: textField() }, { key: "b", label: "B", input: textField() }],
+			fields: [
+				{ key: "a", label: "A", input: textField() },
+				{ key: "b", label: "B", input: textField() },
+			],
 		});
-		form.onSubmit = () => { submitted = true; };
+		form.onSubmit = () => {
+			submitted = true;
+		};
 		form.handleInput(ENTER);
 		expect(submitted).toBe(false);
 	});
@@ -53,9 +66,17 @@ describe("Form", () => {
 		const b = textField();
 		type(a, "x");
 		type(b, "y");
-		const form = new Form({ theme: THEME, fields: [{ key: "first", label: "A", input: a }, { key: "second", label: "B", input: b }] });
+		const form = new Form({
+			theme: THEME,
+			fields: [
+				{ key: "first", label: "A", input: a },
+				{ key: "second", label: "B", input: b },
+			],
+		});
 		let result: unknown;
-		form.onSubmit = (r) => { result = r; };
+		form.onSubmit = (r) => {
+			result = r;
+		};
 		form.handleInput(TAB);
 		form.handleInput(ENTER);
 		expect(result).toEqual({ first: "x", second: "y" });
@@ -64,7 +85,9 @@ describe("Form", () => {
 	it("refuses to submit while a required field is empty, without calling onSubmit", () => {
 		let called = false;
 		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
-		form.onSubmit = () => { called = true; };
+		form.onSubmit = () => {
+			called = true;
+		};
 		form.handleInput(ENTER);
 		expect(called).toBe(false);
 		expect(form.render(80).join("\n")).toContain("required");
@@ -76,7 +99,9 @@ describe("Form", () => {
 			theme: THEME,
 			fields: [{ key: "a", label: "A", input: textField(), required: false }],
 		});
-		form.onSubmit = (r) => { result = r; };
+		form.onSubmit = (r) => {
+			result = r;
+		};
 		form.handleInput(ENTER);
 		expect(result).toEqual({ a: "" });
 	});
@@ -85,8 +110,12 @@ describe("Form", () => {
 		let submitted = false;
 		let canceled = false;
 		const form = new Form({ theme: THEME, fields: [{ key: "a", label: "A", input: textField() }] });
-		form.onSubmit = () => { submitted = true; };
-		form.onCancel = () => { canceled = true; };
+		form.onSubmit = () => {
+			submitted = true;
+		};
+		form.onCancel = () => {
+			canceled = true;
+		};
 		type(form, "x");
 		form.handleInput(ESCAPE);
 		expect(canceled).toBe(true);
@@ -96,7 +125,10 @@ describe("Form", () => {
 	it("composes with MaskedInput -- the masked field's real value never appears in render() output", () => {
 		const form = new Form({
 			theme: THEME,
-			fields: [{ key: "name", label: "Name", input: textField() }, { key: "secret", label: "Secret", input: new MaskedInput() }],
+			fields: [
+				{ key: "name", label: "Name", input: textField() },
+				{ key: "secret", label: "Secret", input: new MaskedInput() },
+			],
 		});
 		form.handleInput(TAB);
 		type(form, "super-secret-value");
@@ -116,7 +148,10 @@ describe("Form", () => {
 		const b = textField();
 		const form = new Form({
 			theme: THEME,
-			fields: [{ key: "a", label: "A", input: a }, { key: "b", label: "B", input: b }],
+			fields: [
+				{ key: "a", label: "A", input: a },
+				{ key: "b", label: "B", input: b },
+			],
 			matchesKey: (data, keyId) => keyId === "tab" && data === "CUSTOM_TAB",
 		});
 		form.handleInput("CUSTOM_TAB");

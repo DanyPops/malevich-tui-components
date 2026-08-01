@@ -6,7 +6,7 @@
  * validation, and layout only.
  */
 import type { Component } from "../component.js";
-import { legacyKeyMatcher, type KeyMatcher } from "../key-matcher.js";
+import { type KeyMatcher, legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface FormFieldInput {

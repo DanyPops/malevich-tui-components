@@ -60,7 +60,15 @@ describe("ScrollView", () => {
 
 	it("invalidate() resets scroll position and forwards to the child", () => {
 		let invalidated = false;
-		const view = new ScrollView({ render: () => ["1", "2", "3"], invalidate: () => { invalidated = true; } }, { maxHeight: 1, showScrollbar: false });
+		const view = new ScrollView(
+			{
+				render: () => ["1", "2", "3"],
+				invalidate: () => {
+					invalidated = true;
+				},
+			},
+			{ maxHeight: 1, showScrollbar: false },
+		);
 		view.scrollDown(2);
 		view.invalidate();
 		expect(invalidated).toBe(true);

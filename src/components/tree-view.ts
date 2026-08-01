@@ -4,7 +4,7 @@
  * directly rather than pulled in from Alef's own design system.
  */
 import type { Component } from "../component.js";
-import { unicodeGlyphs, type GlyphSet } from "../glyphs.js";
+import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
 
 export interface TreeNode {
 	label: string;

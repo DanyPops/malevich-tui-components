@@ -30,9 +30,7 @@ describe("findMnemonicConflicts", () => {
 		const root: MnemonicContext = {
 			name: "global",
 			bindings: [{ key: "f", description: "jump to Find" }],
-			children: [
-				{ name: "config", bindings: [{ key: "f", description: "filter resources" }] },
-			],
+			children: [{ name: "config", bindings: [{ key: "f", description: "filter resources" }] }],
 		};
 		const conflicts = findMnemonicConflicts(root);
 		expect(conflicts).toHaveLength(1);
@@ -44,9 +42,7 @@ describe("findMnemonicConflicts", () => {
 		const root: MnemonicContext = {
 			name: "global",
 			bindings: [{ key: "f", description: "jump to Find" }],
-			children: [
-				{ name: "packages", bindings: [{ key: "f", description: "jump to Find" }] },
-			],
+			children: [{ name: "packages", bindings: [{ key: "f", description: "jump to Find" }] }],
 		};
 		expect(findMnemonicConflicts(root)).toEqual([]);
 	});

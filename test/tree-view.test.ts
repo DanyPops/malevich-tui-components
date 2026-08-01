@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { asciiGlyphs } from "../src/glyphs.ts";
 import { TreeView } from "../src/components/tree-view.ts";
+import { asciiGlyphs } from "../src/glyphs.ts";
 
 describe("TreeView", () => {
 	it("renders a flat list of nodes with branch connectors, last node using the corner glyph", () => {
@@ -26,7 +26,9 @@ describe("TreeView", () => {
 	});
 
 	it("does not render an embedded Component when the node is collapsed", () => {
-		const tree = new TreeView({ nodes: [{ label: "node", collapsed: true, component: { render: () => ["hidden"], invalidate: () => {} } }] });
+		const tree = new TreeView({
+			nodes: [{ label: "node", collapsed: true, component: { render: () => ["hidden"], invalidate: () => {} } }],
+		});
 		expect(tree.render(80)).toEqual(["└── node"]);
 	});
 

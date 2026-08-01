@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { HistoryChart, type ChartBucket, type ChartSeries, type HistoryChartTheme } from "../src/components/history-chart.ts";
+import { type ChartBucket, type ChartSeries, HistoryChart, type HistoryChartTheme } from "../src/components/history-chart.ts";
 
 const THEME: HistoryChartTheme = {
 	title: (s) => s,
@@ -20,8 +20,12 @@ function bucket(start: number, end: number, total: number): ChartBucket {
 describe("HistoryChart", () => {
 	it("renders the title and a cumulative-total summary line", () => {
 		const chart = new HistoryChart({
-			title: "Usage", buckets: [bucket(0, 1000, 10), bucket(1000, 2000, 20)], series: SERIES,
-			formatValue: (v) => `${v}`, noDataText: "none", theme: THEME,
+			title: "Usage",
+			buckets: [bucket(0, 1000, 10), bucket(1000, 2000, 20)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "none",
+			theme: THEME,
 		});
 		const lines = chart.render(40);
 		expect(lines[0]).toBe("Usage");
@@ -30,32 +34,59 @@ describe("HistoryChart", () => {
 
 	it("renders the no-data message when the cumulative total and budget are both zero", () => {
 		const chart = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 0)], series: SERIES,
-			formatValue: (v) => `${v}`, noDataText: "Nothing yet.", theme: THEME,
+			title: "T",
+			buckets: [bucket(0, 1, 0)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "Nothing yet.",
+			theme: THEME,
 		});
 		expect(chart.render(40).join("\n")).toContain("Nothing yet.");
 	});
 
 	it("reports budget state: not configured, under budget, and over budget", () => {
 		const notConfigured = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 10)], series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME,
+			title: "T",
+			buckets: [bucket(0, 1, 10)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
 		});
 		expect(notConfigured.render(40)[1]).toContain("budget not configured");
 
 		const underBudget = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 10)], series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME, budget: 100,
+			title: "T",
+			buckets: [bucket(0, 1, 10)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
+			budget: 100,
 		});
 		expect(underBudget.render(40)[1]).toContain("remaining");
 
 		const overBudget = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 150)], series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME, budget: 100,
+			title: "T",
+			buckets: [bucket(0, 1, 150)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
+			budget: 100,
 		});
 		expect(overBudget.render(40)[1]).toContain("OVER BUDGET");
 	});
 
-	it("prefixes the observed total with \"at least\" when truncated", () => {
+	it('prefixes the observed total with "at least" when truncated', () => {
 		const chart = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 10)], series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME, truncated: true,
+			title: "T",
+			buckets: [bucket(0, 1, 10)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
+			truncated: true,
 		});
 		expect(chart.render(80)[1]).toContain("at least 10");
 		expect(chart.render(80)[1]).toContain("query limit reached");
@@ -63,7 +94,13 @@ describe("HistoryChart", () => {
 
 	it("renders an optional subtitle line beneath the budget summary", () => {
 		const chart = new HistoryChart({
-			title: "T", buckets: [bucket(0, 1, 10)], series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME, subtitle: "extra detail",
+			title: "T",
+			buckets: [bucket(0, 1, 10)],
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
+			subtitle: "extra detail",
 		});
 		expect(chart.render(40)[2]).toBe("extra detail");
 	});
@@ -72,8 +109,13 @@ describe("HistoryChart", () => {
 		const chart = new HistoryChart({
 			title: "T",
 			buckets: [{ start: 0, end: 1, total: 30, series: { a: 10, b: 20 } }],
-			series: [{ key: "a", label: "Alpha" }, { key: "b", label: "Beta" }],
-			formatValue: (v) => `${v}`, noDataText: "n", theme: THEME,
+			series: [
+				{ key: "a", label: "Alpha" },
+				{ key: "b", label: "Beta" },
+			],
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
 		});
 		const output = chart.render(60).join("\n");
 		expect(output).toContain("Alpha");
@@ -87,7 +129,11 @@ describe("HistoryChart", () => {
 		const chart = new HistoryChart({
 			title: "T",
 			buckets: [{ start: 0, end: 1, total: 5, series: Object.fromEntries(series.map((s) => [s.key, 1])) }],
-			series, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME, maxSeriesShown: 2,
+			series,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
+			maxSeriesShown: 2,
 		});
 		const output = chart.render(80).join("\n");
 		expect(output).toContain("3 more series omitted");
@@ -102,7 +148,12 @@ describe("HistoryChart", () => {
 	it("every rendered line stays within the requested width", () => {
 		const chart = new HistoryChart({
 			title: "A title long enough to matter for truncation checks",
-			buckets: [bucket(0, 1000, 12345)], series: SERIES, formatValue: (v) => `$${v}`, noDataText: "n", theme: THEME, budget: 9999,
+			buckets: [bucket(0, 1000, 12345)],
+			series: SERIES,
+			formatValue: (v) => `$${v}`,
+			noDataText: "n",
+			theme: THEME,
+			budget: 9999,
 		});
 		for (const line of chart.render(25)) expect(line.length).toBeLessThanOrEqual(25);
 	});
@@ -112,7 +163,12 @@ describe("HistoryChart", () => {
 		// distinct columns instead of overwriting each other.
 		const buckets = Array.from({ length: 10 }, (_, i) => bucket(i * 1000, (i + 1) * 1000, 1));
 		const chart = new HistoryChart({
-			title: "T", buckets, series: SERIES, formatValue: (v) => `${v}`, noDataText: "n", theme: THEME,
+			title: "T",
+			buckets,
+			series: SERIES,
+			formatValue: (v) => `${v}`,
+			noDataText: "n",
+			theme: THEME,
 			formatAxisLabel: (ms) => `T${ms}`,
 		});
 		const output = chart.render(80).join("\n");

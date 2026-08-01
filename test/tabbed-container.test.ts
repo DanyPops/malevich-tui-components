@@ -10,7 +10,9 @@ function fakeContent(lines: string[]): Component & { received: string[] } {
 		received,
 		render: () => lines,
 		invalidate() {},
-		handleInput(data: string) { received.push(data); },
+		handleInput(data: string) {
+			received.push(data);
+		},
 	};
 }
 
@@ -170,7 +172,10 @@ describe("TabbedContainer", () => {
 		const t = tabs();
 		const container = new TabbedContainer({ tabs: t, theme: THEME });
 		let invalidated = 0;
-		for (const tab of t) tab.content.invalidate = () => { invalidated += 1; };
+		for (const tab of t)
+			tab.content.invalidate = () => {
+				invalidated += 1;
+			};
 		container.invalidate();
 		expect(invalidated).toBe(3);
 	});

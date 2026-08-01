@@ -52,7 +52,12 @@ describe("Collapsible", () => {
 	it("invalidate() forwards to the content Component when set", () => {
 		let invalidated = false;
 		const c = new Collapsible({ header: "H" });
-		c.setContent({ render: () => [], invalidate: () => { invalidated = true; } });
+		c.setContent({
+			render: () => [],
+			invalidate: () => {
+				invalidated = true;
+			},
+		});
 		c.invalidate();
 		expect(invalidated).toBe(true);
 	});

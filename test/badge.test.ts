@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { Badge, formatBadgeCount } from "../src/components/badge.ts";
 
 describe("formatBadgeCount", () => {
-	it("renders 0 as \"0\"", () => expect(formatBadgeCount(0)).toBe("0"));
+	it('renders 0 as "0"', () => expect(formatBadgeCount(0)).toBe("0"));
 	it("renders small counts verbatim", () => expect(formatBadgeCount(42)).toBe("42"));
 	it("abbreviates thousands with one decimal", () => expect(formatBadgeCount(1_500)).toBe("1.5k"));
 	it("abbreviates ten-thousands+ as a rounded k", () => expect(formatBadgeCount(12_345)).toBe("12k"));

@@ -37,7 +37,10 @@ export const asciiTextMeasure: TextMeasure = {
 		if (width <= 0) return [text];
 		const out: string[] = [];
 		for (const inputLine of text.split("\n")) {
-			if (inputLine.length === 0) { out.push(""); continue; }
+			if (inputLine.length === 0) {
+				out.push("");
+				continue;
+			}
 			let line = inputLine;
 			while (line.length > width) {
 				let breakAt = line.lastIndexOf(" ", width);
