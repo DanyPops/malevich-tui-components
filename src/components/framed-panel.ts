@@ -6,9 +6,11 @@
  */
 export interface FramedPanelOptions {
 	width: number;
-	/** The character repeated to draw the top/bottom rule, e.g. glyphs.line.thin or a literal "─". */
-	rule: string;
-	ruleStyle: (s: string) => string;
+	/** The character repeated to draw the top/bottom rule, e.g. glyphs.line.thin or a literal "─".
+	 * Omit entirely (along with ruleStyle) to skip both rules -- for a panel already nested inside
+	 * another framed container, where its own rule would just double up on that container's border. */
+	rule?: string;
+	ruleStyle?: (s: string) => string;
 	/** Rendered directly under the top rule, before contentLines. */
 	titleLines?: string[];
 	contentLines: string[];
@@ -17,11 +19,12 @@ export interface FramedPanelOptions {
 }
 
 export function renderFramedPanel(opts: FramedPanelOptions): string[] {
-	const rule = opts.ruleStyle(opts.rule.repeat(Math.max(1, opts.width)));
-	const lines: string[] = [rule];
+	const rule = opts.rule !== undefined ? (opts.ruleStyle ?? ((s: string) => s))(opts.rule.repeat(Math.max(1, opts.width))) : undefined;
+	const lines: string[] = [];
+	if (rule !== undefined) lines.push(rule);
 	if (opts.titleLines) lines.push(...opts.titleLines);
 	lines.push(...opts.contentLines);
 	if (opts.footerLines) lines.push(...opts.footerLines);
-	lines.push(rule);
+	if (rule !== undefined) lines.push(rule);
 	return lines;
 }

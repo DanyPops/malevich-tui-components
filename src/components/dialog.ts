@@ -33,6 +33,11 @@ export interface DialogOptions {
 	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
 	glyphs?: GlyphSet;
 	matchesKey?: KeyMatcher;
+	/** Defaults to true (a standalone dialog with its own top/bottom rule).
+	 * Set false when rendering as another already-bordered container's own
+	 * content (e.g. an Envelope's setContent) -- two rules landing back to
+	 * back read as a redundant double border. */
+	framed?: boolean;
 }
 
 /** A bordered title+body+action-hints dialog. Dispatches to the matching DialogAction on a key press (case-insensitive), or the "n"/"Esc"-keyed action (if any) on Escape. */
@@ -44,6 +49,7 @@ export class Dialog implements Component {
 	private readonly measure: TextMeasure;
 	private readonly glyphs: GlyphSet;
 	private readonly matchesKey: KeyMatcher;
+	private readonly framed: boolean;
 
 	constructor(opts: DialogOptions) {
 		this.title = opts.title;
@@ -53,6 +59,7 @@ export class Dialog implements Component {
 		this.measure = opts.measure ?? asciiTextMeasure;
 		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
+		this.framed = opts.framed ?? true;
 	}
 
 	invalidate(): void {}
@@ -71,8 +78,7 @@ export class Dialog implements Component {
 
 		return renderFramedPanel({
 			width,
-			rule: this.glyphs.line.thin,
-			ruleStyle: theme.border,
+			...(this.framed ? { rule: this.glyphs.line.thin, ruleStyle: theme.border } : {}),
 			titleLines: [theme.title(`  ${this.title}`)],
 			contentLines: bodyLines,
 		});

@@ -33,4 +33,13 @@ describe("renderFramedPanel", () => {
 		const lines = renderFramedPanel({ width: 0, rule: "-", ruleStyle: (s) => s, contentLines: [] });
 		expect(lines).toEqual(["-", "-"]);
 	});
+
+	// A panel nested inside another already-bordered container (e.g. a Dialog
+	// rendered as an Envelope's own content) doesn't need its own top/bottom
+	// rule -- two sets of horizontal rules back-to-back read as a redundant
+	// double border. Omitting `rule` entirely skips both, with no placeholder.
+	it("omits both rules entirely when rule is not given -- for nesting inside an already-framed container", () => {
+		const lines = renderFramedPanel({ width: 5, titleLines: ["Title"], contentLines: ["body"], footerLines: ["help"] });
+		expect(lines).toEqual(["Title", "body", "help"]);
+	});
 });

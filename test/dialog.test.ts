@@ -65,6 +65,20 @@ describe("Dialog", () => {
 		expect(() => dialog.invalidate()).not.toThrow();
 	});
 
+	// A Dialog rendered as another already-bordered container's own content
+	// (e.g. an Envelope's setContent) doesn't need its own top/bottom rule --
+	// confirmed live as a real user-reported bug: two horizontal rules landed
+	// back to back, immediately inside the Envelope's own top/bottom border.
+	it("omits its own top/bottom rule when framed is false, keeping title/body/hints", () => {
+		const dialog = new Dialog({ title: "Confirm", body: "Are you sure?", actions: [{ label: "Yes", key: "y", action: () => {} }], theme: THEME, framed: false });
+		const lines = dialog.render(40);
+		expect(lines[0]).not.toBe("─".repeat(40));
+		expect(lines[lines.length - 1]).not.toBe("─".repeat(40));
+		expect(lines[0]).toContain("Confirm");
+		expect(lines.some((l) => l.includes("Are you sure?"))).toBe(true);
+		expect(lines.some((l) => l.includes("[y] Yes"))).toBe(true);
+	});
+
 	it("draws its border from an injected glyph set instead of the unicode default", () => {
 		const dialog = new Dialog({ title: "T", body: "b", actions: [], theme: THEME, glyphs: asciiGlyphs });
 		const lines = dialog.render(10);
