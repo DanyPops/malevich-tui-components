@@ -40,7 +40,7 @@ handling; components default to plain-ASCII measurement otherwise.
 |---|---|
 | `Table` | Tabular data with auto-sized or fixed column widths, alignment, and a header separator. |
 | `ProgressBar` | A single-line `label filled/empty-bar pct%` meter. |
-| `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. |
+| `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. `framed: false` omits its own top/bottom rule for nesting inside a host's own already-drawn border (e.g. an Envelope). |
 | `Toast` | A single auto-dismissing message (or wrapped Component). |
 | `NotificationQueue` | A capped, auto-expiring queue of leveled (info/success/warning/error) notifications. |
 | `ScrollView` | Wraps a child in a fixed-height, vertically scrollable viewport with an optional scrollbar. |
@@ -59,6 +59,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `Text` | Plain "render a string, styled and fit to width" primitive -- truncates or word-wraps to the render width. |
 | `Board` | A multi-column card board (Kanban-style): items grouped into columns, keyboard-navigable selection (arrow keys move between cards, skipping empty columns), caller-supplied card rendering. |
 | `TabMenu` | A horizontal tab bar that can descend into child levels -- Enter on a branch node walks down into its children, Escape walks back up (or cancels at the root). A leaf node resolves `onSelect` with its value; a mnemonic character jumps to and activates a node in one step. |
+| `TabbedContainer` | A persistent tab bar (every tab's label always visible) over one swappable child Component -- the composable primitive for hosting several sibling features (Packages/Find/Config/Settings, say) in one long-lived overlay instead of each closing and opening its own. Left/Right or Tab/Shift-Tab cycle; a mnemonic character jumps directly, defaulting to a tab's own first letter or set explicitly when two labels would collide on it. Every other key delegates straight to the active tab's own content. |
+| `Spinner` | A tiny indeterminate-progress ticker for a single in-flight async call with no discrete step count -- renders no chrome of its own, a host embeds `glyph()` inline (a table cell, a status line, a dialog). |
 
 ## Utilities
 
@@ -68,7 +70,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `deriveTableColumns` | Given `unknown[]`, derives `Table`-ready columns/rows when every item is a plain object: unions the keys, stringifies non-string values. Returns `undefined` for non-tabular input. |
 | `firstDistinctStyle` | Given a baseline-styled string and candidate-styled strings (in preference order), returns the first candidate that's visually distinct from the baseline, else a fallback -- the fix for a theme that maps two semantic color tokens to the same underlying color, making a more specific token look identical to plain text. |
 | `renderFramedPanel` | The rule+title+content+rule scaffold shared by `Dialog`, `Menu`, and `BorderedSelectPanel` -- assembly only, callers pass already-styled/measured lines. |
-| `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
+| `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `TabbedContainer`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
+| `findMnemonicConflicts` / `assertNoMnemonicConflicts` | Tree-style accelerator-key conflict detection -- given a `MnemonicContext` tree describing which key bindings are reachable together (a root's own plus whichever single child is active), reports any key bound to more than one distinct action along a path. Meant to run as a standing test assertion against a real application's own keybinding tree. |
 
 ## License
 

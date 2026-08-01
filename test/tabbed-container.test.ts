@@ -111,6 +111,36 @@ describe("TabbedContainer", () => {
 			const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
 			expect(container.resolveMnemonic("z")).toBeUndefined();
 		});
+
+		it("an explicit mnemonic overrides the label's own first letter, resolving and rendering distinctly", () => {
+			const overridden: TabbedContainerTab[] = [
+				{ key: "gh", label: "GitHub", content: fakeContent(["gh body"]), mnemonic: "h" },
+				{ key: "gl", label: "GitLab", content: fakeContent(["gl body"]), mnemonic: "l" },
+			];
+			const container = new TabbedContainer({ tabs: overridden, theme: THEME });
+			// The default first-letter ('g') would collide between GitHub and GitLab --
+			// neither resolves via 'g' once both have an explicit override.
+			expect(container.resolveMnemonic("g")).toBeUndefined();
+			expect(container.resolveMnemonic("h")).toBe("gh");
+			expect(container.resolveMnemonic("l")).toBe("gl");
+			// The active tab (GitHub, first by default) renders its plain label; GitLab
+			// (unfocused) highlights its override letter as its own bracketed hint --
+			// "l" isn't a literal prefix of "GitLab", so it can't just style a slice.
+			const bar = container.render(80)[0]!;
+			expect(bar).toContain("[ GitHub ]");
+			expect(bar).toContain("<[l]>GitLab");
+		});
+
+		it("renders a non-prefix mnemonic as its own bracketed hint ahead of the label", () => {
+			const withNonPrefix: TabbedContainerTab[] = [
+				{ key: "a", label: "Alpha", content: fakeContent(["a"]) },
+				{ key: "board", label: "Board view", content: fakeContent(["b"]), mnemonic: "u" },
+			];
+			const container = new TabbedContainer({ tabs: withNonPrefix, theme: THEME });
+			const bar = container.render(80)[0]!;
+			expect(bar).toContain("<[u]>Board view");
+			expect(container.resolveMnemonic("u")).toBe("board");
+		});
 	});
 
 	it("fires onChange with the newly active key whenever the active tab changes", () => {

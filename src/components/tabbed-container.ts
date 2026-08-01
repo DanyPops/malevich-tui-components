@@ -21,6 +21,8 @@ export interface TabbedContainerTab {
 	key: string;
 	label: string;
 	content: Component;
+	/** Defaults to the label's own first letter. Set explicitly when two tabs' labels would otherwise collide on the same letter (e.g. "GitHub"/"GitLab" both starting with G) -- only one can win the default, so callers with real ambiguity give both an unambiguous mnemonic instead. */
+	mnemonic?: string;
 }
 
 export interface TabBarTheme {
@@ -68,7 +70,7 @@ export class TabbedContainer implements Component {
 	 * the active tab's own content wants that character for free-text entry
 	 * instead) -- this method only answers "which tab, if any". */
 	resolveMnemonic(data: string): string | undefined {
-		return this.tabs.find((t) => t.label.slice(0, 1).toLowerCase() === data.toLowerCase())?.key;
+		return this.tabs.find((t) => (t.mnemonic ?? t.label.slice(0, 1)).toLowerCase() === data.toLowerCase())?.key;
 	}
 
 	setActive(key: string): void {
@@ -86,9 +88,15 @@ export class TabbedContainer implements Component {
 		const bar = this.tabs
 			.map((tab, i) => {
 				if (i === this.activeIndex) return this.theme.activeTab(` ${tab.label} `);
-				const first = tab.label.slice(0, 1);
-				const rest = tab.label.slice(1);
-				return this.theme.tab(` ${this.theme.mnemonic(first)}${rest} `);
+				const mnemonic = tab.mnemonic ?? tab.label.slice(0, 1);
+				// The mnemonic may not be a literal prefix of the label (an explicit
+				// override doesn't have to be) -- render it as its own bracketed hint
+				// ahead of the label instead of assuming the rest of the label follows it.
+				const isPrefix = tab.label.slice(0, mnemonic.length).toLowerCase() === mnemonic.toLowerCase();
+				const body = isPrefix
+					? `${this.theme.mnemonic(tab.label.slice(0, mnemonic.length))}${tab.label.slice(mnemonic.length)}`
+					: `${this.theme.mnemonic(`[${mnemonic}]`)}${tab.label}`;
+				return this.theme.tab(` ${body} `);
 			})
 			.join(" ");
 		return [bar, ...this.tabs[this.activeIndex]!.content.render(width)];
