@@ -86,6 +86,34 @@ describe("Table", () => {
 	// short (id/kind/status/timestamps), a couple of arbitrarily long ones
 	// (title/body) scattered in the middle and not last -- the auto-derived
 	// table Vehicle's generic renderer builds from a notes_list result.
+	// A cell value with an embedded newline (e.g. a multi-paragraph note body) breaks the
+	// one-array-entry-per-physical-terminal-line contract every Component.render() consumer
+	// depends on: even when the string's own character count stays within colWidths[i] (so
+	// the row's total length is correctly bounded), the terminal itself starts a new physical
+	// line the instant it hits the embedded \n mid-cell -- and everything printed after that on
+	// what the TUI framework still thinks is "one line" keeps accumulating onto a runaway
+	// visible width, exactly the crash shape reported live against a notes_list result whose
+	// body field was a real multi-line note.
+	it("strips embedded newlines from cell content instead of letting them survive into a rendered line", () => {
+		const table = new Table({
+			columns: [{ header: "id", key: "id" }, { header: "body", key: "body" }],
+			rows: [
+				{ id: "a", body: "Hi\nThis is the rest of a very long multi-line note body that goes on and on and on and on for quite a while to force truncation mid-way through, well past the embedded newline character at the start." },
+				{ id: "b", body: "Short." },
+			],
+		});
+		const lines = table.render(60);
+		for (const line of lines) {
+			expect(line).not.toContain("\n");
+			expect(line.length).toBeLessThanOrEqual(60);
+		}
+	});
+
+	it("deriveTableColumns strips embedded newlines from string values before they ever reach Table", () => {
+		const derived = deriveTableColumns([{ id: "a", body: "line one\nline two\nline three" }]);
+		expect(derived?.rows[0]?.body).not.toContain("\n");
+	});
+
 	it("fits a realistic multi-column table (short id/kind/status columns plus long title/body columns) within a real terminal width", () => {
 		const table = new Table({
 			columns: [

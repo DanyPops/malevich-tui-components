@@ -54,11 +54,26 @@ export function deriveTableColumns(items: readonly unknown[]): DerivedTable | un
 		const row: Record<string, string> = {};
 		for (const key of keys) {
 			const value = item[key];
-			row[key] = value === undefined ? "" : typeof value === "string" ? value : JSON.stringify(value);
+			row[key] = value === undefined ? "" : singleLine(typeof value === "string" ? value : JSON.stringify(value));
 		}
 		return row;
 	});
 	return { columns, rows };
+}
+
+/**
+ * Collapses any embedded line breaks to a single space. A cell value with a real newline
+ * (e.g. a multi-paragraph note body) breaks the one-array-entry-per-physical-terminal-line
+ * contract every Component.render() consumer depends on: even when the raw string's own
+ * character count stays within a column's width budget, the terminal starts a new physical
+ * line the instant it hits the embedded newline mid-cell, and everything printed after it
+ * keeps accumulating onto what the TUI framework still believes is a single, already-bounded
+ * line -- the exact shape of a real crash (a notes_list result whose body field was a genuine
+ * multi-line note). Table.render() applies this defensively too, for a caller that builds
+ * rows directly instead of through deriveTableColumns.
+ */
+function singleLine(text: string): string {
+	return text.replace(/\s*\n+\s*/g, " ");
 }
 
 function padCell(text: string, width: number, align: "left" | "right", measure: TextMeasure): string {
@@ -129,10 +144,21 @@ export class Table implements Component {
 		const measure = this.measure;
 		const gap = 2;
 
+		// Sanitized once up front (not just inside deriveTableColumns) so a caller building rows
+		// directly, bypassing deriveTableColumns entirely, gets the same one-line-per-cell
+		// guarantee -- natural-width sizing, truncation, and the final rendered line all agree on
+		// the same already-single-line text instead of measuring/truncating raw multi-line content
+		// and only cleaning it up afterward (too late to keep truncation's own math correct).
+		const sanitizedRows = rows.map((row) => {
+			const clean: Record<string, string> = {};
+			for (const col of columns) clean[col.key] = singleLine(row[col.key] ?? "");
+			return clean;
+		});
+
 		const naturalWidths = columns.map((col) => {
 			if (col.width) return col.width;
 			const headerW = measure.visibleWidth(col.header);
-			const maxCellW = rows.reduce((max, row) => Math.max(max, measure.visibleWidth(row[col.key] ?? "")), 0);
+			const maxCellW = sanitizedRows.reduce((max, row) => Math.max(max, measure.visibleWidth(row[col.key] ?? "")), 0);
 			return Math.max(headerW, maxCellW);
 		});
 
@@ -174,7 +200,7 @@ export class Table implements Component {
 		const separator = columns.map((_, i) => this.glyphs.line.thin.repeat(colWidths[i] as number)).join(" ".repeat(gap));
 		lines.push(clampLine(separator));
 
-		for (const row of rows) {
+		for (const row of sanitizedRows) {
 			const rowLine = columns
 				.map((col, i) => {
 					const raw = row[col.key] ?? "";
