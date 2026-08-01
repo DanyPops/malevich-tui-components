@@ -29,28 +29,29 @@ describe("TabbedContainer", () => {
 		expect(bar).toContain("lpha");
 		expect(bar).toContain("eta");
 		expect(bar).toContain("amma");
-		// Active tab's whole label (mnemonic + rest) is wrapped by activeTab; an
-		// inactive one only by tab.
-		expect(bar).toContain("[ <A>lpha ");
-		expect(bar).not.toContain("[<B>eta");
-		expect(bar).not.toContain("[<G>amma");
+		// Active tab's whole plain label is wrapped by activeTab; an inactive
+		// one only by tab, with its mnemonic highlighted separately.
+		expect(bar).toContain("[ Alpha ]");
+		expect(bar).toContain("<B>eta");
+		expect(bar).toContain("<G>amma");
 	});
 
-	// The first letter of every tab's label is its mnemonic -- pressing it
-	// (from a context that isn't capturing free text) jumps straight there,
-	// so it's rendered in a visually distinct style from the rest of the
-	// label, on every tab, active or not (not just the active one).
-	it("highlights each label's first letter distinctly, as its mnemonic, on every tab", () => {
+	// The first letter of every UNFOCUSED tab's label is its mnemonic --
+	// pressing it jumps straight there, so it's rendered in a visually
+	// distinct style from the rest of the label. The active tab is already
+	// where you are, so it renders its plain label with no mnemonic
+	// highlight -- there's nothing to advertise a jump to.
+	it("highlights each label's first letter distinctly, as its mnemonic, on unfocused tabs only", () => {
 		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
 		const bar = container.render(80)[0]!;
-		expect(bar).toContain("<A>");
+		expect(bar).not.toContain("<A>"); // Alpha is active -- no mnemonic highlight
 		expect(bar).toContain("<B>");
 		expect(bar).toContain("<G>");
 	});
 
 	it("renders the active tab's own content directly below the tab bar", () => {
 		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
-		expect(container.render(80)).toEqual(["[ <A>lpha ]  <B>eta   <G>amma ", "alpha body"]);
+		expect(container.render(80)).toEqual(["[ Alpha ]  <B>eta   <G>amma ", "alpha body"]);
 	});
 
 	it("defaults to the first tab, or an explicit initialKey when given", () => {
@@ -65,8 +66,8 @@ describe("TabbedContainer", () => {
 		container.setActive("c");
 		expect(container.getActiveKey()).toBe("c");
 		const lines = container.render(80);
-		expect(lines[0]).toContain("[ <G>amma ");
-		expect(lines[0]).not.toContain("[<A>lpha");
+		expect(lines[0]).toContain("[ Gamma ]"); // now active -- plain label, no mnemonic
+		expect(lines[0]).toContain("<A>lpha"); // now unfocused -- mnemonic highlighted
 		expect(lines).toEqual([lines[0]!, "gamma body"]);
 	});
 

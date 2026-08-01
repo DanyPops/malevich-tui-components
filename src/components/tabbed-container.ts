@@ -26,7 +26,7 @@ export interface TabbedContainerTab {
 export interface TabBarTheme {
 	tab: (s: string) => string;
 	activeTab: (s: string) => string;
-	/** Applied to just a tab's first letter (its mnemonic -- see resolveMnemonic), on every tab, active or not; nested inside tab/activeTab's own wrap so both styles compose the way this codebase already composes layered styling elsewhere (e.g. theme.bold(theme.fg(...))). */
+	/** Applied to just a tab's first letter (its mnemonic -- see resolveMnemonic), on unfocused tabs only -- the active tab is already where you are, so there's nothing to advertise a jump to. Nested inside tab's own wrap so both styles compose the way this codebase already composes layered styling elsewhere (e.g. theme.bold(theme.fg(...))). */
 	mnemonic: (s: string) => string;
 }
 
@@ -85,10 +85,10 @@ export class TabbedContainer implements Component {
 	render(width: number): string[] {
 		const bar = this.tabs
 			.map((tab, i) => {
-				const wrap = i === this.activeIndex ? this.theme.activeTab : this.theme.tab;
+				if (i === this.activeIndex) return this.theme.activeTab(` ${tab.label} `);
 				const first = tab.label.slice(0, 1);
 				const rest = tab.label.slice(1);
-				return wrap(` ${this.theme.mnemonic(first)}${rest} `);
+				return this.theme.tab(` ${this.theme.mnemonic(first)}${rest} `);
 			})
 			.join(" ");
 		return [bar, ...this.tabs[this.activeIndex]!.content.render(width)];
