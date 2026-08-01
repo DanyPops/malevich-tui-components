@@ -53,3 +53,5 @@ export {
 	type ContextSegment,
 	type ContextSegmentItem,
 } from "./components/context-breakdown.js";
+export { renderTruncatedList, type TruncatedListOptions } from "./components/truncated-list.js";
+export { classifyDiffLine, renderDiffLines, type DiffLineKind, type DiffTheme } from "./components/diff.js";
