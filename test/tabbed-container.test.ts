@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { Component } from "../src/component.ts";
 import { TabbedContainer, type TabbedContainerTab } from "../src/components/tabbed-container.ts";
 
-const THEME = { tab: (s: string) => s, activeTab: (s: string) => `[${s}]` };
+const THEME = { tab: (s: string) => s, activeTab: (s: string) => `[${s}]`, mnemonic: (s: string) => `<${s}>` };
 
 function fakeContent(lines: string[]): Component & { received: string[] } {
 	const received: string[] = [];
@@ -26,16 +26,31 @@ describe("TabbedContainer", () => {
 	it("renders every tab's label on one persistent bar, with the active one highlighted", () => {
 		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
 		const bar = container.render(80)[0]!;
-		expect(bar).toContain("[ Alpha ]");
-		expect(bar).toContain("Beta");
-		expect(bar).toContain("Gamma");
-		expect(bar).not.toContain("[ Beta ]");
-		expect(bar).not.toContain("[ Gamma ]");
+		expect(bar).toContain("lpha");
+		expect(bar).toContain("eta");
+		expect(bar).toContain("amma");
+		// Active tab's whole label (mnemonic + rest) is wrapped by activeTab; an
+		// inactive one only by tab.
+		expect(bar).toContain("[ <A>lpha ");
+		expect(bar).not.toContain("[<B>eta");
+		expect(bar).not.toContain("[<G>amma");
+	});
+
+	// The first letter of every tab's label is its mnemonic -- pressing it
+	// (from a context that isn't capturing free text) jumps straight there,
+	// so it's rendered in a visually distinct style from the rest of the
+	// label, on every tab, active or not (not just the active one).
+	it("highlights each label's first letter distinctly, as its mnemonic, on every tab", () => {
+		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
+		const bar = container.render(80)[0]!;
+		expect(bar).toContain("<A>");
+		expect(bar).toContain("<B>");
+		expect(bar).toContain("<G>");
 	});
 
 	it("renders the active tab's own content directly below the tab bar", () => {
 		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
-		expect(container.render(80)).toEqual(["[ Alpha ]  Beta   Gamma ", "alpha body"]);
+		expect(container.render(80)).toEqual(["[ <A>lpha ]  <B>eta   <G>amma ", "alpha body"]);
 	});
 
 	it("defaults to the first tab, or an explicit initialKey when given", () => {
@@ -50,8 +65,8 @@ describe("TabbedContainer", () => {
 		container.setActive("c");
 		expect(container.getActiveKey()).toBe("c");
 		const lines = container.render(80);
-		expect(lines[0]).toContain("[ Gamma ]");
-		expect(lines[0]).not.toContain("[ Alpha ]");
+		expect(lines[0]).toContain("[ <G>amma ");
+		expect(lines[0]).not.toContain("[<A>lpha");
 		expect(lines).toEqual([lines[0]!, "gamma body"]);
 	});
 
@@ -71,6 +86,30 @@ describe("TabbedContainer", () => {
 		expect(container.getActiveKey()).toBe("a");
 		container.handleInput("\x1b[D"); // left wraps the other way
 		expect(container.getActiveKey()).toBe("c");
+	});
+
+	it("Tab/Shift-Tab also cycle tabs, wrapping at both ends -- same as Left/Right", () => {
+		const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
+		container.handleInput("\t"); // tab
+		expect(container.getActiveKey()).toBe("b");
+		container.handleInput("\x1b[Z"); // shift+tab
+		expect(container.getActiveKey()).toBe("a");
+		container.handleInput("\x1b[Z"); // wraps backward
+		expect(container.getActiveKey()).toBe("c");
+	});
+
+	describe("resolveMnemonic", () => {
+		it("resolves a label's first letter, case-insensitively, to that tab's key", () => {
+			const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
+			expect(container.resolveMnemonic("a")).toBe("a");
+			expect(container.resolveMnemonic("A")).toBe("a");
+			expect(container.resolveMnemonic("g")).toBe("c"); // Gamma's own key is "c", not "g"
+		});
+
+		it("returns undefined for a letter matching no tab's mnemonic", () => {
+			const container = new TabbedContainer({ tabs: tabs(), theme: THEME });
+			expect(container.resolveMnemonic("z")).toBeUndefined();
+		});
 	});
 
 	it("fires onChange with the newly active key whenever the active tab changes", () => {

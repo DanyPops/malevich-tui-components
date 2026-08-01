@@ -26,6 +26,8 @@ export interface TabbedContainerTab {
 export interface TabBarTheme {
 	tab: (s: string) => string;
 	activeTab: (s: string) => string;
+	/** Applied to just a tab's first letter (its mnemonic -- see resolveMnemonic), on every tab, active or not; nested inside tab/activeTab's own wrap so both styles compose the way this codebase already composes layered styling elsewhere (e.g. theme.bold(theme.fg(...))). */
+	mnemonic: (s: string) => string;
 }
 
 export interface TabbedContainerOptions {
@@ -58,6 +60,17 @@ export class TabbedContainer implements Component {
 		return this.tabs[this.activeIndex]!.key;
 	}
 
+	/** Every tab's mnemonic is its label's own first letter (matching the
+	 * literal highlight this bar renders) -- resolved case-insensitively,
+	 * since the displayed letter is capitalized but a plain keypress sends
+	 * lowercase. Returns the matching tab's key, or undefined for no match.
+	 * A host decides whether/when to actually act on this (e.g. never while
+	 * the active tab's own content wants that character for free-text entry
+	 * instead) -- this method only answers "which tab, if any". */
+	resolveMnemonic(data: string): string | undefined {
+		return this.tabs.find((t) => t.label.slice(0, 1).toLowerCase() === data.toLowerCase())?.key;
+	}
+
 	setActive(key: string): void {
 		const index = this.tabs.findIndex((t) => t.key === key);
 		if (index < 0 || index === this.activeIndex) return;
@@ -71,17 +84,22 @@ export class TabbedContainer implements Component {
 
 	render(width: number): string[] {
 		const bar = this.tabs
-			.map((tab, i) => (i === this.activeIndex ? this.theme.activeTab(` ${tab.label} `) : this.theme.tab(` ${tab.label} `)))
+			.map((tab, i) => {
+				const wrap = i === this.activeIndex ? this.theme.activeTab : this.theme.tab;
+				const first = tab.label.slice(0, 1);
+				const rest = tab.label.slice(1);
+				return wrap(` ${this.theme.mnemonic(first)}${rest} `);
+			})
 			.join(" ");
 		return [bar, ...this.tabs[this.activeIndex]!.content.render(width)];
 	}
 
 	handleInput(data: string): void {
-		if (this.matchesKey(data, "left")) {
+		if (this.matchesKey(data, "left") || this.matchesKey(data, "shift+tab")) {
 			this.cycle(-1);
 			return;
 		}
-		if (this.matchesKey(data, "right")) {
+		if (this.matchesKey(data, "right") || this.matchesKey(data, "tab")) {
 			this.cycle(1);
 			return;
 		}
