@@ -84,19 +84,24 @@ export class TabbedContainer implements Component {
 		for (const tab of this.tabs) tab.content.invalidate();
 	}
 
+	private renderLabel(tab: TabbedContainerTab): string {
+		const mnemonic = tab.mnemonic ?? tab.label.slice(0, 1);
+		// Highlight the mnemonic character in place wherever it actually occurs
+		// in the label (e.g. the "H" inside "GitHub", not a prefix slice) -- an
+		// explicit override doesn't have to be the first letter, and a reader
+		// expects the highlighted letter to be the one they'd type, not a
+		// bracketed hint bolted on the front when it's plainly visible already.
+		const index = tab.label.toLowerCase().indexOf(mnemonic.toLowerCase());
+		if (index < 0) return `${this.theme.mnemonic(`[${mnemonic}]`)}${tab.label}`;
+		const end = index + mnemonic.length;
+		return `${tab.label.slice(0, index)}${this.theme.mnemonic(tab.label.slice(index, end))}${tab.label.slice(end)}`;
+	}
+
 	render(width: number): string[] {
 		const bar = this.tabs
 			.map((tab, i) => {
 				if (i === this.activeIndex) return this.theme.activeTab(` ${tab.label} `);
-				const mnemonic = tab.mnemonic ?? tab.label.slice(0, 1);
-				// The mnemonic may not be a literal prefix of the label (an explicit
-				// override doesn't have to be) -- render it as its own bracketed hint
-				// ahead of the label instead of assuming the rest of the label follows it.
-				const isPrefix = tab.label.slice(0, mnemonic.length).toLowerCase() === mnemonic.toLowerCase();
-				const body = isPrefix
-					? `${this.theme.mnemonic(tab.label.slice(0, mnemonic.length))}${tab.label.slice(mnemonic.length)}`
-					: `${this.theme.mnemonic(`[${mnemonic}]`)}${tab.label}`;
-				return this.theme.tab(` ${body} `);
+				return this.theme.tab(` ${this.renderLabel(tab)} `);
 			})
 			.join(" ");
 		return [bar, ...this.tabs[this.activeIndex]!.content.render(width)];

@@ -126,19 +126,30 @@ describe("TabbedContainer", () => {
 			expect(container.resolveMnemonic("h")).toBe("gh");
 			expect(container.resolveMnemonic("l")).toBe("gl");
 			// The active tab (GitHub, first by default) renders its plain label; GitLab
-			// (unfocused) highlights its override letter as its own bracketed hint --
-			// "l" isn't a literal prefix of "GitLab", so it can't just style a slice.
+			// (unfocused) highlights its override letter in place -- "l" occurs inside
+			// "GitLab" itself, so it's styled where it actually sits, not bracketed.
 			const bar = container.render(80)[0]!;
 			expect(bar).toContain("[ GitHub ]");
-			expect(bar).toContain("<[l]>GitLab");
+			expect(bar).toContain("Git<L>ab");
 		});
 
-		it("renders a non-prefix mnemonic as its own bracketed hint ahead of the label", () => {
-			const withNonPrefix: TabbedContainerTab[] = [
+		it("highlights an explicit mnemonic in place wherever it occurs mid-label, not just as a prefix", () => {
+			const midLabel: TabbedContainerTab[] = [
+				{ key: "a", label: "Alpha", content: fakeContent(["a"]) },
+				{ key: "board", label: "Board view", content: fakeContent(["b"]), mnemonic: "v" },
+			];
+			const container = new TabbedContainer({ tabs: midLabel, theme: THEME });
+			const bar = container.render(80)[0]!;
+			expect(bar).toContain("Board <v>iew");
+			expect(container.resolveMnemonic("v")).toBe("board");
+		});
+
+		it("falls back to a bracketed hint only when the mnemonic doesn't occur anywhere in the label", () => {
+			const absent: TabbedContainerTab[] = [
 				{ key: "a", label: "Alpha", content: fakeContent(["a"]) },
 				{ key: "board", label: "Board view", content: fakeContent(["b"]), mnemonic: "u" },
 			];
-			const container = new TabbedContainer({ tabs: withNonPrefix, theme: THEME });
+			const container = new TabbedContainer({ tabs: absent, theme: THEME });
 			const bar = container.render(80)[0]!;
 			expect(bar).toContain("<[u]>Board view");
 			expect(container.resolveMnemonic("u")).toBe("board");
