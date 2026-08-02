@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
+import { visibleWidth } from "@earendil-works/pi-tui";
 import { TreeView } from "../src/components/tree-view.ts";
 import { asciiGlyphs } from "../src/glyphs.ts";
-import { visibleWidth } from "@earendil-works/pi-tui";
 
 describe("TreeView", () => {
 	it("renders a flat list of nodes with branch connectors, last node using the corner glyph", () => {
