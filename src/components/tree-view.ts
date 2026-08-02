@@ -5,6 +5,7 @@
  */
 import type { Component } from "../component.js";
 import { type GlyphSet, unicodeGlyphs } from "../glyphs.js";
+import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface TreeNode {
 	label: string;
@@ -19,6 +20,8 @@ export interface TreeViewOptions {
 	defaultStyle?: (s: string) => string;
 	/** Defaults to unicodeGlyphs. Pass asciiGlyphs (or a custom set) for terminals/fonts that render box-drawing poorly. */
 	glyphs?: GlyphSet;
+	/** Defaults to asciiTextMeasure. A host with real ANSI-styled labels (the common case -- callers typically pre-style `label` with their own theme) should pass its own ANSI-aware measure, matching every other bounded component in this library. */
+	measure?: TextMeasure;
 }
 
 /** Renders a labeled tree with box-drawing branch/pipe connectors. Each node may optionally embed a child Component (rendered indented beneath it) and/or its own list of child TreeNodes. */
@@ -26,11 +29,13 @@ export class TreeView implements Component {
 	private nodes: TreeNode[];
 	private readonly defaultStyle: (s: string) => string;
 	private readonly glyphs: GlyphSet["tree"];
+	private readonly measure: TextMeasure;
 
 	constructor(opts: TreeViewOptions) {
 		this.nodes = opts.nodes;
 		this.defaultStyle = opts.defaultStyle ?? ((s) => s);
 		this.glyphs = (opts.glyphs ?? unicodeGlyphs).tree;
+		this.measure = opts.measure ?? asciiTextMeasure;
 	}
 
 	setNodes(nodes: TreeNode[]): void {
@@ -44,7 +49,7 @@ export class TreeView implements Component {
 		const renderNode = (node: TreeNode, prefix: string, isLast: boolean): void => {
 			const branch = isLast ? this.glyphs.last : this.glyphs.branch;
 			const style = node.style ?? this.defaultStyle;
-			lines.push(style(`${prefix}${branch}${node.label}`));
+			lines.push(this.measure.truncateToWidth(style(`${prefix}${branch}${node.label}`), width));
 			if (node.component && !node.collapsed) {
 				const contentPrefix = prefix + (isLast ? this.glyphs.space : this.glyphs.pipe);
 				// -2 for the "  " indent re-added below -- an embedded component's own

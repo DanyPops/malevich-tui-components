@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { TreeView } from "../src/components/tree-view.ts";
 import { asciiGlyphs } from "../src/glyphs.ts";
+import { visibleWidth } from "@earendil-works/pi-tui";
 
 describe("TreeView", () => {
 	it("renders a flat list of nodes with branch connectors, last node using the corner glyph", () => {
@@ -51,6 +52,24 @@ describe("TreeView", () => {
 			nodes: [{ label: "node", collapsed: true, component: { render: () => ["hidden"], invalidate: () => {} } }],
 		});
 		expect(tree.render(80)).toEqual(["└── node"]);
+	});
+
+	it("truncates a node's own label line to the given width, not just an embedded component's", () => {
+		const tree = new TreeView({ nodes: [{ label: "A".repeat(200) }] });
+		expect(tree.render(20)[0]?.length).toBeLessThanOrEqual(20);
+	});
+
+	it("truncates a nested child's label at its own indented width, not the outer width", () => {
+		const tree = new TreeView({ nodes: [{ label: "parent", children: [{ label: "B".repeat(200) }] }] });
+		for (const line of tree.render(20)) expect(line.length).toBeLessThanOrEqual(20);
+	});
+
+	it("uses an injected measure instead of the built-in ascii default, matching every other bounded component in this library", () => {
+		const tree = new TreeView({
+			nodes: [{ label: "hello" }],
+			measure: { visibleWidth, truncateToWidth: (text) => `<custom>${text}</custom>` },
+		});
+		expect(tree.render(80)[0]).toBe("<custom>└── hello</custom>");
 	});
 
 	it("applies a per-node style, falling back to defaultStyle", () => {
