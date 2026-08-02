@@ -25,6 +25,27 @@ describe("TreeView", () => {
 		expect(lines[1]).toContain("embedded");
 	});
 
+	it("budgets an embedded Component's own width for the extra two-space indent re-added around its output", () => {
+		const tree = new TreeView({
+			nodes: [
+				{
+					label: "node",
+					component: {
+						render: (width: number) => ["x".repeat(width)], // fills whatever width it's told, exposing any over-budget
+						invalidate: () => {},
+					},
+				},
+			],
+		});
+		// Below ~16 the component's own 10-char minimum (guaranteeing it always
+		// gets *some* usable width) can legitimately still overflow a
+		// pathologically narrow request -- 20+ is the realistic floor this
+		// guards, matching the width range real terminal rendering exercises.
+		for (const width of [20, 40, 80]) {
+			for (const line of tree.render(width)) expect(line.length).toBeLessThanOrEqual(width);
+		}
+	});
+
 	it("does not render an embedded Component when the node is collapsed", () => {
 		const tree = new TreeView({
 			nodes: [{ label: "node", collapsed: true, component: { render: () => ["hidden"], invalidate: () => {} } }],

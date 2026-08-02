@@ -47,7 +47,11 @@ export class TreeView implements Component {
 			lines.push(style(`${prefix}${branch}${node.label}`));
 			if (node.component && !node.collapsed) {
 				const contentPrefix = prefix + (isLast ? this.glyphs.space : this.glyphs.pipe);
-				const contentWidth = Math.max(10, width - contentPrefix.length);
+				// -2 for the "  " indent re-added below -- an embedded component's own
+				// render() has no way to know about that extra indent on its own, so
+				// budgeting only contentPrefix.length here let every embedded line
+				// overflow the caller's requested width by exactly 2 columns.
+				const contentWidth = Math.max(10, width - contentPrefix.length - 2);
 				for (const line of node.component.render(contentWidth)) {
 					lines.push(`${contentPrefix}  ${line}`);
 				}
