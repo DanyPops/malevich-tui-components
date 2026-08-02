@@ -22,6 +22,7 @@ export {
 	renderContextRowLines,
 	renderContextUsageBar,
 } from "./components/context-breakdown.js";
+export { type DagEdge, type DagNode, DagView, type DagViewOptions } from "./components/dag-view.js";
 export {
 	type BuildDetailLinesOptions,
 	buildDetailLines,
