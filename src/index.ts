@@ -45,6 +45,15 @@ export {
 } from "./components/history-chart.js";
 export { MaskedInput, type MaskedInputOptions } from "./components/masked-input.js";
 export { Menu, type MenuItem, type MenuOptions, type MenuTheme } from "./components/menu.js";
+export {
+	type MultiSelectConfirmAction,
+	type MultiSelectConfirmation,
+	MultiSelectList,
+	type MultiSelectListItem,
+	MultiSelectListModel,
+	type MultiSelectListOptions,
+	type MultiSelectListTheme,
+} from "./components/multi-select-list.js";
 export { type NotificationEntry, type NotificationOptions, NotificationQueue } from "./components/notification.js";
 export { ProgressBar, type ProgressBarOptions } from "./components/progress-bar.js";
 export { ScrollView, type ScrollViewOptions } from "./components/scroll-view.js";
