@@ -16,6 +16,7 @@
 import type { Component } from "../component.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
+import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface TabbedContainerTab {
 	key: string;
@@ -40,6 +41,7 @@ export interface TabbedContainerOptions {
 	/** Fires with the newly active key whenever the active tab actually changes (Left/Right cycling or a setActive call) -- not on a setActive to the already-active tab. */
 	onChange?: (key: string) => void;
 	matchesKey?: KeyMatcher;
+	measure?: TextMeasure;
 }
 
 export class TabbedContainer implements Component {
@@ -47,6 +49,7 @@ export class TabbedContainer implements Component {
 	private readonly theme: TabBarTheme;
 	private readonly onChange?: (key: string) => void;
 	private readonly matchesKey: KeyMatcher;
+	private readonly measure: TextMeasure;
 	private activeIndex: number;
 
 	constructor(opts: TabbedContainerOptions) {
@@ -54,6 +57,7 @@ export class TabbedContainer implements Component {
 		this.theme = opts.theme;
 		this.onChange = opts.onChange;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
+		this.measure = opts.measure ?? asciiTextMeasure;
 		const initial = opts.initialKey !== undefined ? this.tabs.findIndex((t) => t.key === opts.initialKey) : 0;
 		this.activeIndex = initial >= 0 ? initial : 0;
 	}
@@ -104,7 +108,7 @@ export class TabbedContainer implements Component {
 				return this.theme.tab(` ${this.renderLabel(tab)} `);
 			})
 			.join(" ");
-		return [bar, ...this.tabs[this.activeIndex]!.content.render(width)];
+		return [this.measure.truncateToWidth(bar, width, ""), ...this.tabs[this.activeIndex]!.content.render(width)];
 	}
 
 	handleInput(data: string): void {

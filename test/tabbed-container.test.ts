@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import type { Component } from "../src/component.ts";
 import { TabbedContainer, type TabbedContainerTab } from "../src/components/tabbed-container.ts";
+import { asciiTextMeasure } from "../src/text-measure.ts";
 
 const THEME = { tab: (s: string) => s, activeTab: (s: string) => `[${s}]`, mnemonic: (s: string) => `<${s}>` };
 
@@ -189,6 +190,17 @@ describe("TabbedContainer", () => {
 			};
 		container.invalidate();
 		expect(invalidated).toBe(3);
+	});
+
+	it("bounds the tab bar to the render width through the injected measure", () => {
+		const tabs = [
+			{ key: "packages", label: "Packages", content: fakeContent([]) },
+			{ key: "find", label: "Find", content: fakeContent([]) },
+			{ key: "config", label: "Config", content: fakeContent([]) },
+			{ key: "settings", label: "Settings", content: fakeContent([]) },
+		];
+		const container = new TabbedContainer({ tabs, theme: THEME, measure: asciiTextMeasure });
+		expect(container.render(36)[0]).toHaveLength(36);
 	});
 
 	it("implements the Component interface", () => {
