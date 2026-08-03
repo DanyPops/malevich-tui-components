@@ -1,6 +1,6 @@
 {
   "name": "malevich-tui-components",
-  "version": "0.20.4",
+  "version": "0.21.0",
   "description": "A headless, renderer-agnostic TUI component library: layout and interaction algorithms only. Color, text measurement, key semantics, and terminal compositing are all host-supplied ports; components run unmodified against any host matching the Component/Focusable shape (Pi's own pi-tui, Alef's alef-tui, or others).",
   "type": "module",
   "license": "MIT",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.6",
+    "@danypops/pi-tui-harness": "^0.0.1",
     "@earendil-works/pi-tui": "^0.82.1",
     "@types/node": "^22.19.19",
     "bun-types": "^1.3.14",
