@@ -103,4 +103,20 @@ describe("Envelope", () => {
 		const visibleWidths = lines.slice(1, -1).map((line) => stripAnsi(line).length);
 		expect(new Set(visibleWidths)).toEqual(new Set([20])); // both lines land on the same real column
 	});
+
+	it("styles border segments independently so styled content cannot reset the closing border", () => {
+		const env = new Envelope({
+			title: "T",
+			collapsed: false,
+			style: (s) => `[${s}]`,
+			titleStyle: (s) => `<${s}>`,
+		});
+		env.setContent({ render: () => ["{body}"], invalidate: () => {} });
+
+		const lines = env.render(12);
+
+		expect(lines[0]).toBe("[╭]< ▾ T >[─────╮]");
+		expect(lines[1]).toBe("[│] {body}   [│]");
+		expect(lines[2]).toBe("[╰──────────╯]");
+	});
 });

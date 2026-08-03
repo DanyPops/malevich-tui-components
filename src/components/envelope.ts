@@ -75,7 +75,7 @@ export class Envelope implements Component {
 		const indicator = this._collapsed ? "▸" : "▾";
 		const titleText = this.measure.truncateToWidth(` ${indicator} ${this.title} `, width - 4, "…");
 		const topPad = Math.max(0, width - this.measure.visibleWidth(titleText) - 2);
-		const top = this.style(`${b.topLeft}${this.titleStyle(titleText)}${b.horizontal.repeat(topPad)}${b.topRight}`);
+		const top = `${this.style(b.topLeft)}${this.titleStyle(titleText)}${this.style(`${b.horizontal.repeat(topPad)}${b.topRight}`)}`;
 
 		if (this._collapsed || !this.content) {
 			return [top];
@@ -86,7 +86,7 @@ export class Envelope implements Component {
 		const lines = [top];
 		for (const line of contentLines) {
 			const pad = Math.max(0, inner - this.measure.visibleWidth(line));
-			lines.push(this.style(`${b.vertical} ${line}${" ".repeat(pad)} ${b.vertical}`));
+			lines.push(`${this.style(b.vertical)} ${line}${" ".repeat(pad)} ${this.style(b.vertical)}`);
 		}
 		lines.push(this.style(`${b.bottomLeft}${b.horizontal.repeat(width - 2)}${b.bottomRight}`));
 		return lines;
