@@ -53,6 +53,10 @@ export interface BuildDetailLinesOptions {
 	sections?: DetailSection[];
 	theme: DetailViewTheme;
 	measure?: TextMeasure;
+	/** Pad every field's label to the width of the longest one in `fields`, so values line
+	 * up in a column (kubectl describe's own convention). Off by default -- an existing
+	 * caller's output is unchanged unless it opts in. */
+	alignFields?: boolean;
 }
 
 /**
@@ -72,8 +76,22 @@ export function buildDetailLines(width: number, options: BuildDetailLinesOptions
 		text.length === 0 ? [""] : (measure.wrapTextWithAnsi ?? asciiTextMeasure.wrapTextWithAnsi)!(style(text), width);
 
 	const lines: string[] = [];
-	for (const field of options.fields ?? []) {
-		lines.push(...wrapWith(`${field.label}: ${field.value}`, theme.field));
+	const fields = options.fields ?? [];
+	// "Label:" padded to the longest one plus ": " -- the colon sits right after its own
+	// label, padding fills before the value, so every value starts in the same column.
+	// Padding is computed and applied via `measure.visibleWidth`, not raw string length --
+	// a label carrying real ANSI (unusual, but not ruled out) would otherwise misalign
+	// exactly like the ANSI-blind-measure bug class this codebase has already hit elsewhere.
+	const labelColumnWidth = options.alignFields ? Math.max(0, ...fields.map((field) => measure.visibleWidth(field.label))) + 2 : 0;
+	for (const field of fields) {
+		let prefix: string;
+		if (options.alignFields) {
+			const colonLabel = `${field.label}:`;
+			prefix = colonLabel + " ".repeat(Math.max(0, labelColumnWidth - measure.visibleWidth(colonLabel)));
+		} else {
+			prefix = `${field.label}: `;
+		}
+		lines.push(...wrapWith(`${prefix}${field.value}`, theme.field));
 	}
 	for (const section of options.sections ?? []) {
 		lines.push("");

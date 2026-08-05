@@ -112,4 +112,55 @@ describe("buildDetailLines", () => {
 		const lines = buildDetailLines(80, { theme: plainTheme, fields: [{ label: "Empty", value: "" }] });
 		expect(lines).toEqual(["Empty: "]);
 	});
+
+	it("does not pad labels by default -- existing callers see no output change", () => {
+		const lines = buildDetailLines(80, {
+			theme: plainTheme,
+			fields: [
+				{ label: "Status", value: "todo" },
+				{ label: "Fix versions", value: "1.0" },
+			],
+		});
+		expect(lines).toEqual(["Status: todo", "Fix versions: 1.0"]);
+	});
+
+	it("alignFields pads every label to the width of the longest one, so values line up in a column", () => {
+		const lines = buildDetailLines(80, {
+			theme: plainTheme,
+			alignFields: true,
+			fields: [
+				{ label: "Status", value: "todo" },
+				{ label: "Fix versions", value: "1.0" },
+			],
+		});
+		expect(lines).toEqual(["Status:       todo", "Fix versions: 1.0"]);
+	});
+
+	it("alignFields is a no-op with zero or one field", () => {
+		expect(buildDetailLines(80, { theme: plainTheme, alignFields: true, fields: [] })).toEqual([]);
+		expect(buildDetailLines(80, { theme: plainTheme, alignFields: true, fields: [{ label: "Status", value: "todo" }] })).toEqual([
+			"Status: todo",
+		]);
+	});
+
+	it("alignFields uses measure.visibleWidth, not raw string length, so an ANSI-styled label still aligns correctly", () => {
+		// Strips a simple ANSI SGR wrapper before counting width -- mimics a real ANSI-aware
+		// visibleWidth (pi-tui's, alef-tui's). A raw-.length-based implementation would count
+		// the escape bytes themselves and wildly over-pad every other label.
+		const ansiAwareMeasure = {
+			visibleWidth: (text: string) => text.replace(/\x1b\[[0-9;]*m/g, "").length,
+			truncateToWidth: (text: string) => text,
+		};
+		const styledLabel = "\x1b[31mAB\x1b[39m"; // visible width 2, raw length 9
+		const lines = buildDetailLines(80, {
+			theme: plainTheme,
+			alignFields: true,
+			measure: ansiAwareMeasure,
+			fields: [
+				{ label: styledLabel, value: "x" },
+				{ label: "A", value: "y" },
+			],
+		});
+		expect(lines).toEqual([`${styledLabel}: x`, "A:  y"]);
+	});
 });
