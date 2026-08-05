@@ -163,4 +163,19 @@ describe("buildDetailLines", () => {
 		});
 		expect(lines).toEqual([`${styledLabel}: x`, "A:  y"]);
 	});
+
+	it("alignFields still wraps a long value at the given width -- continuation lines aren't re-padded", () => {
+		const lines = buildDetailLines(12, {
+			theme: plainTheme,
+			alignFields: true,
+			fields: [
+				{ label: "Body", value: "one two three" },
+				{ label: "Status", value: "todo" },
+			],
+		});
+		for (const line of lines) expect(line.length).toBeLessThanOrEqual(12);
+		expect(lines.join(" ")).toContain("one");
+		expect(lines.join(" ")).toContain("three");
+		expect(lines.some((line) => line.startsWith("Status: todo"))).toBe(true);
+	});
 });
