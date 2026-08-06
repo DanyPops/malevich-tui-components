@@ -1,4 +1,5 @@
 export type { Component, Focusable } from "./component.js";
+export { statelessComponent } from "./component.js";
 export { Badge, type BadgeOptions, formatBadgeCount } from "./components/badge.js";
 export {
 	Board,

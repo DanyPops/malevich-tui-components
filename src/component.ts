@@ -22,3 +22,14 @@ export interface Focusable {
 	/** Set by the host TUI when focus changes. */
 	focused: boolean;
 }
+
+/**
+ * Wraps a plain width-in/lines-out render function as a Component -- for any renderer
+ * (typically one built from buildDetailLines/DagView-style helpers) with no cache to
+ * invalidate, recomputing its lines fresh on every render() call. Extracted from a pattern
+ * independently duplicated by more than one Vehicle-consuming renderer -- the shared home for
+ * it going forward instead of a third copy.
+ */
+export function statelessComponent(render: (width: number) => string[]): Component {
+	return { render, invalidate: () => {} };
+}
