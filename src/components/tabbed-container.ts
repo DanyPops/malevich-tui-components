@@ -16,7 +16,7 @@
 import type { Component } from "../component.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
-import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
+import type { TextMeasure } from "../text-measure.js";
 
 export interface TabbedContainerTab {
 	key: string;
@@ -41,7 +41,8 @@ export interface TabbedContainerOptions {
 	/** Fires with the newly active key whenever the active tab actually changes (Left/Right cycling or a setActive call) -- not on a setActive to the already-active tab. */
 	onChange?: (key: string) => void;
 	matchesKey?: KeyMatcher;
-	measure?: TextMeasure;
+	/** Required -- pass `asciiTextMeasure` explicitly for plain unstyled content. */
+	measure: TextMeasure;
 }
 
 export class TabbedContainer implements Component {
@@ -57,7 +58,7 @@ export class TabbedContainer implements Component {
 		this.theme = opts.theme;
 		this.onChange = opts.onChange;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
-		this.measure = opts.measure ?? asciiTextMeasure;
+		this.measure = opts.measure;
 		const initial = opts.initialKey !== undefined ? this.tabs.findIndex((t) => t.key === opts.initialKey) : 0;
 		this.activeIndex = initial >= 0 ? initial : 0;
 	}
