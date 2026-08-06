@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { buildDetailLines, type DetailViewTheme } from "../src/components/detail-view.js";
+import { asciiTextMeasure } from "../src/text-measure.js";
 
 const plainTheme: DetailViewTheme = {
 	field: (s) => s,
@@ -12,6 +13,7 @@ describe("buildDetailLines", () => {
 	it("renders fields with no blank line between them", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			fields: [
 				{ label: "Status", value: "todo" },
 				{ label: "Priority", value: "high" },
@@ -21,13 +23,14 @@ describe("buildDetailLines", () => {
 	});
 
 	it("omits a field entirely when the caller doesn't include it -- no emptiness filtering inside", () => {
-		const lines = buildDetailLines(80, { theme: plainTheme, fields: [{ label: "Status", value: "todo" }] });
+		const lines = buildDetailLines(80, { theme: plainTheme, measure: asciiTextMeasure, fields: [{ label: "Status", value: "todo" }] });
 		expect(lines).toEqual(["Status: todo"]);
 	});
 
 	it("a body-only section gets a blank line before the heading and a blank line before the body", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			sections: [{ heading: "Description:", body: "The full description." }],
 		});
 		expect(lines).toEqual(["", "Description:", "", "The full description."]);
@@ -36,6 +39,7 @@ describe("buildDetailLines", () => {
 	it("a thread section gives each item its own leading blank line, byline, then body", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			sections: [
 				{
 					heading: "Comments (2):",
@@ -52,6 +56,7 @@ describe("buildDetailLines", () => {
 	it("a thread item without a byline skips just that line, not the blank or the body", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			sections: [{ items: [{ body: "No byline here" }] }],
 		});
 		// One blank from the section's own leading separator, one from the item's own -- a
@@ -62,6 +67,7 @@ describe("buildDetailLines", () => {
 	it("fields and sections compose in order: all fields first, then each section", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			fields: [{ label: "Status", value: "todo" }],
 			sections: [{ heading: "Description:", body: "text" }, { heading: "Comments (0):" }],
 		});
@@ -69,7 +75,11 @@ describe("buildDetailLines", () => {
 	});
 
 	it("wraps long text to the given width", () => {
-		const lines = buildDetailLines(10, { theme: plainTheme, fields: [{ label: "Note", value: "one two three four five" }] });
+		const lines = buildDetailLines(10, {
+			theme: plainTheme,
+			measure: asciiTextMeasure,
+			fields: [{ label: "Note", value: "one two three four five" }],
+		});
 		expect(lines.length).toBeGreaterThan(1);
 		for (const line of lines) expect(line.length).toBeLessThanOrEqual(10);
 	});
@@ -83,6 +93,7 @@ describe("buildDetailLines", () => {
 		};
 		const lines = buildDetailLines(80, {
 			theme: styled,
+			measure: asciiTextMeasure,
 			fields: [{ label: "Status", value: "todo" }],
 			sections: [{ heading: "Comments (1):", items: [{ byline: "Alice", body: "Hi" }] }],
 		});
@@ -92,30 +103,36 @@ describe("buildDetailLines", () => {
 	it("a `lines` section renders its flat rows directly under the heading, with no blank line between them", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			sections: [{ heading: "Metadata:", lines: ["  owner: Daniel", "  state: verified"] }],
 		});
 		expect(lines).toEqual(["", "Metadata:", "  owner: Daniel", "  state: verified"]);
 	});
 
 	it("a `lines` section falls back to theme.body when theme.line isn't given", () => {
-		const lines = buildDetailLines(80, { theme: plainTheme, sections: [{ lines: ["a", "b"] }] });
+		const lines = buildDetailLines(80, { theme: plainTheme, measure: asciiTextMeasure, sections: [{ lines: ["a", "b"] }] });
 		expect(lines).toEqual(["", "a", "b"]);
 	});
 
 	it("a `lines` section uses theme.line when given, distinct from theme.body", () => {
 		const styled: DetailViewTheme = { ...plainTheme, body: (s) => `[body]${s}`, line: (s) => `[line]${s}` };
-		const lines = buildDetailLines(80, { theme: styled, sections: [{ heading: "Metadata:", lines: ["owner: Daniel"] }] });
+		const lines = buildDetailLines(80, {
+			theme: styled,
+			measure: asciiTextMeasure,
+			sections: [{ heading: "Metadata:", lines: ["owner: Daniel"] }],
+		});
 		expect(lines).toEqual(["", "Metadata:", "[line]owner: Daniel"]);
 	});
 
 	it("renders an empty string as a single blank line, not zero lines", () => {
-		const lines = buildDetailLines(80, { theme: plainTheme, fields: [{ label: "Empty", value: "" }] });
+		const lines = buildDetailLines(80, { theme: plainTheme, measure: asciiTextMeasure, fields: [{ label: "Empty", value: "" }] });
 		expect(lines).toEqual(["Empty: "]);
 	});
 
 	it("does not pad labels by default -- existing callers see no output change", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			fields: [
 				{ label: "Status", value: "todo" },
 				{ label: "Fix versions", value: "1.0" },
@@ -127,6 +144,7 @@ describe("buildDetailLines", () => {
 	it("alignFields pads every label to the width of the longest one, so values line up in a column", () => {
 		const lines = buildDetailLines(80, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			alignFields: true,
 			fields: [
 				{ label: "Status", value: "todo" },
@@ -137,10 +155,15 @@ describe("buildDetailLines", () => {
 	});
 
 	it("alignFields is a no-op with zero or one field", () => {
-		expect(buildDetailLines(80, { theme: plainTheme, alignFields: true, fields: [] })).toEqual([]);
-		expect(buildDetailLines(80, { theme: plainTheme, alignFields: true, fields: [{ label: "Status", value: "todo" }] })).toEqual([
-			"Status: todo",
-		]);
+		expect(buildDetailLines(80, { theme: plainTheme, measure: asciiTextMeasure, alignFields: true, fields: [] })).toEqual([]);
+		expect(
+			buildDetailLines(80, {
+				theme: plainTheme,
+				measure: asciiTextMeasure,
+				alignFields: true,
+				fields: [{ label: "Status", value: "todo" }],
+			}),
+		).toEqual(["Status: todo"]);
 	});
 
 	it("alignFields uses measure.visibleWidth, not raw string length, so an ANSI-styled label still aligns correctly", () => {
@@ -167,6 +190,7 @@ describe("buildDetailLines", () => {
 	it("alignFields still wraps a long value at the given width -- continuation lines aren't re-padded", () => {
 		const lines = buildDetailLines(12, {
 			theme: plainTheme,
+			measure: asciiTextMeasure,
 			alignFields: true,
 			fields: [
 				{ label: "Body", value: "one two three" },

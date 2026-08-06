@@ -52,7 +52,8 @@ export interface BuildDetailLinesOptions {
 	fields?: DetailField[];
 	sections?: DetailSection[];
 	theme: DetailViewTheme;
-	measure?: TextMeasure;
+	/** Required -- pass `asciiTextMeasure` explicitly for plain unstyled content. */
+	measure: TextMeasure;
 	/** Pad every field's label to the width of the longest one in `fields`, so values line
 	 * up in a column (kubectl describe's own convention). Off by default -- an existing
 	 * caller's output is unchanged unless it opts in. */
@@ -70,8 +71,7 @@ export interface BuildDetailLinesOptions {
  * show, simply isn't included in the input arrays).
  */
 export function buildDetailLines(width: number, options: BuildDetailLinesOptions): string[] {
-	const measure = options.measure ?? asciiTextMeasure;
-	const { theme } = options;
+	const { measure, theme } = options;
 	const wrapWith = (text: string, style: (s: string) => string): string[] =>
 		text.length === 0 ? [""] : (measure.wrapTextWithAnsi ?? asciiTextMeasure.wrapTextWithAnsi)!(style(text), width);
 
