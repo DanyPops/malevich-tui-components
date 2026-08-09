@@ -4,6 +4,7 @@
  * period navigation, and token/cost formatting stay there.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface ChartSeries {
@@ -53,6 +54,7 @@ export interface HistoryChartOptions {
 	formatAxisLabel?: (timestampMs: number) => string;
 	theme: HistoryChartTheme;
 	measure?: TextMeasure;
+	glyphs?: GlyphTheme;
 	/** Plot rows, not counting title/subtitle/axis/legend lines. Default 8. */
 	height?: number;
 	/** Reserved column width for Y-axis value labels. Default 8. */
@@ -60,8 +62,6 @@ export interface HistoryChartOptions {
 	/** Cap on legend rows before "N more series omitted". Default 6. */
 	maxSeriesShown?: number;
 }
-
-const PARTIAL_BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
 
 function mergeBuckets(buckets: ChartBucket[], maximum: number): ChartBucket[] {
 	if (buckets.length <= maximum) return buckets;
@@ -90,12 +90,14 @@ export class HistoryChart implements Component {
 	private readonly height: number;
 	private readonly yAxisWidth: number;
 	private readonly maxSeriesShown: number;
+	private readonly glyphs: GlyphTheme;
 
 	constructor(private readonly opts: HistoryChartOptions) {
 		this.measure = opts.measure ?? asciiTextMeasure;
 		this.height = opts.height ?? 8;
 		this.yAxisWidth = opts.yAxisWidth ?? 8;
 		this.maxSeriesShown = opts.maxSeriesShown ?? 6;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 	}
 
 	invalidate(): void {}
@@ -180,7 +182,9 @@ export class HistoryChart implements Component {
 						: "";
 			if (thresholdRow) {
 				const lineStyle = grandTotal > (budget as number) ? opts.theme.errorLine : opts.theme.warningLine;
-				lines.push(`${label.padStart(this.yAxisWidth - 2)} ${opts.theme.axis("│")}${lineStyle("┄".repeat(plotWidth))}`);
+				lines.push(
+					`${label.padStart(this.yAxisWidth - 2)} ${opts.theme.axis(this.glyphs.chart.vertical)}${lineStyle(this.glyphs.chart.threshold.repeat(plotWidth))}`,
+				);
 				continue;
 			}
 			let plot = "";
@@ -191,13 +195,16 @@ export class HistoryChart implements Component {
 					plot += " ".repeat(barStep);
 					continue;
 				}
-				const block = PARTIAL_BLOCKS[Math.max(0, Math.ceil(occupancy * PARTIAL_BLOCKS.length) - 1)] as string;
+				const partials = this.glyphs.chart.partial;
+				const block = partials[Math.max(0, Math.ceil(occupancy * partials.length) - 1)] ?? "";
 				const valueHeight = Math.min(bucket.total, (maximum * (fromBottom + Math.min(occupancy, 0.5))) / this.height);
 				plot += opts.theme.series(this.seriesAt(bucket, valueHeight))(block) + (barStep === 2 ? " " : "");
 			}
-			lines.push(`${label.padStart(this.yAxisWidth - 2)} ${opts.theme.axis("│")}${plot}`);
+			lines.push(`${label.padStart(this.yAxisWidth - 2)} ${opts.theme.axis(this.glyphs.chart.vertical)}${plot}`);
 		}
-		lines.push(`${"0".padStart(this.yAxisWidth - 2)} ${opts.theme.axis(`└${"─".repeat(plotWidth)}`)}`);
+		lines.push(
+			`${"0".padStart(this.yAxisWidth - 2)} ${opts.theme.axis(`${this.glyphs.chart.bottomLeft}${this.glyphs.chart.horizontal.repeat(plotWidth)}`)}`,
+		);
 		lines.push(
 			`${" ".repeat(this.yAxisWidth)}${opts.theme.axis(this.axisLabels(opts.buckets[0]?.start ?? 0, opts.buckets[opts.buckets.length - 1]?.end ?? 0, plotWidth))}`,
 		);
@@ -206,7 +213,7 @@ export class HistoryChart implements Component {
 		const displayedSeries = opts.series.slice(0, this.maxSeriesShown);
 		for (let index = 0; index < displayedSeries.length; index += 1) {
 			const series = displayedSeries[index] as ChartSeries;
-			const bullet = opts.theme.series(index)("■");
+			const bullet = opts.theme.series(index)(this.glyphs.chart.bullet);
 			const seriesTotal = opts.buckets.reduce((sum, bucket) => sum + (bucket.series[series.key] ?? 0), 0);
 			lines.push(measure.truncateToWidth(`${bullet} ${series.label}  ${opts.formatValue(seriesTotal)}`, safeWidth, "…"));
 		}

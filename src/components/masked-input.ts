@@ -5,6 +5,7 @@
  * handling so a terminal paste isn't silently dropped.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { type KeyMatcher, legacyKeyMatcher } from "../key-matcher.js";
 
 const PASTE_START = "\x1b[200~";
@@ -14,6 +15,7 @@ export interface MaskedInputOptions {
 	matchesKey?: KeyMatcher;
 	/** Glyph rendered once per real character. Default "•". */
 	maskChar?: string;
+	glyphs?: GlyphTheme;
 }
 
 /**
@@ -37,7 +39,7 @@ export class MaskedInput implements Component {
 
 	constructor(opts: MaskedInputOptions = {}) {
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
-		this.maskChar = opts.maskChar ?? "•";
+		this.maskChar = opts.maskChar ?? opts.glyphs?.indicator.mask ?? unicodeGlyphs.indicator.mask;
 	}
 
 	getValue(): string {

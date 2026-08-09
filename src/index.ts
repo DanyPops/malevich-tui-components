@@ -58,7 +58,17 @@ export {
 	type MultiSelectListTheme,
 } from "./components/multi-select-list.js";
 export { type NotificationEntry, type NotificationOptions, NotificationQueue } from "./components/notification.js";
-export { ProgressBar, type ProgressBarOptions } from "./components/progress-bar.js";
+export {
+	calculateProgressBarGeometry,
+	createProgressBarRenderer,
+	ProgressBar,
+	type ProgressBarGeometry,
+	type ProgressBarGlyphStyle,
+	type ProgressBarGlyphs,
+	type ProgressBarOptions,
+	progressBarGlyphs,
+	renderProgressBar,
+} from "./components/progress-bar.js";
 export { ScrollView, type ScrollViewOptions } from "./components/scroll-view.js";
 export { SeparatorLine, type SeparatorLineOptions, type SeparatorWeight } from "./components/separator-line.js";
 export { Spinner, type SpinnerOptions } from "./components/spinner.js";
@@ -77,7 +87,16 @@ export { Text, type TextOptions } from "./components/text.js";
 export { Toast, type ToastOptions, type ToastScheduler, type ToastTheme } from "./components/toast.js";
 export { type TreeNode, TreeView, type TreeViewOptions } from "./components/tree-view.js";
 export { renderTruncatedList, type TruncatedListOptions } from "./components/truncated-list.js";
-export { asciiGlyphs, type GlyphSet, unicodeGlyphs } from "./glyphs.js";
+export {
+	asciiGlyphs,
+	type BoxGlyphs,
+	type GlyphSet,
+	type GlyphTheme,
+	type ProgressGlyphStyle,
+	type ProgressGlyphs,
+	progressGlyphStyles,
+	unicodeGlyphs,
+} from "./glyphs.js";
 export { type KeyMatcher, legacyKeyMatcher } from "./key-matcher.js";
 export {
 	assertNoMnemonicConflicts,

@@ -1,3 +1,5 @@
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
+
 /**
  * A tiny, testable indeterminate-progress ticker for a surface with no
  * discrete step count (a single in-flight async call, unlike ProgressBar's
@@ -8,22 +10,22 @@
  */
 export interface SpinnerOptions {
 	/** Animation frames. Defaults to the standard braille "dots" cycle. */
-	frames?: string[];
+	frames?: readonly string[];
+	glyphs?: GlyphTheme;
 	/** Frame interval in milliseconds. Defaults to 80. */
 	intervalMs?: number;
 }
 
-const DEFAULT_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const DEFAULT_INTERVAL_MS = 80;
 
 export class Spinner {
-	private readonly frames: string[];
+	private readonly frames: readonly string[];
 	private readonly intervalMs: number;
 	private index = 0;
 	private timer: ReturnType<typeof setInterval> | undefined;
 
 	constructor(opts: SpinnerOptions = {}) {
-		this.frames = opts.frames ?? DEFAULT_FRAMES;
+		this.frames = opts.frames ?? opts.glyphs?.spinner.frames ?? unicodeGlyphs.spinner.frames;
 		this.intervalMs = opts.intervalMs ?? DEFAULT_INTERVAL_MS;
 	}
 

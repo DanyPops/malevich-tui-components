@@ -4,6 +4,7 @@
  * replaced by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
@@ -12,6 +13,7 @@ export interface ScrollViewOptions {
 	maxHeight?: number;
 	showScrollbar?: boolean;
 	measure?: TextMeasure;
+	glyphs?: GlyphTheme;
 	matchesKey?: KeyMatcher;
 }
 
@@ -21,6 +23,7 @@ export class ScrollView implements Component {
 	private readonly maxHeight: number;
 	private readonly showScrollbar: boolean;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphTheme;
 	private readonly matchesKey: KeyMatcher;
 
 	constructor(
@@ -30,6 +33,7 @@ export class ScrollView implements Component {
 		this.maxHeight = opts.maxHeight ?? 20;
 		this.showScrollbar = opts.showScrollbar ?? true;
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
 	}
 
@@ -94,7 +98,7 @@ export class ScrollView implements Component {
 
 		return visible.map((line, i) => {
 			const inThumb = i >= thumbStart && i < thumbStart + thumbSize;
-			return `${this.measure.truncateToWidth(line, width - 1, "…")}${inThumb ? "█" : "░"}`;
+			return `${this.measure.truncateToWidth(line, width - 1, "…")}${inThumb ? this.glyphs.scrollbar.thumb : this.glyphs.scrollbar.track}`;
 		});
 	}
 }

@@ -10,6 +10,7 @@
  * functions in its own border/footer/scroll-offset chrome, the same way
  * pi-tickets' IssueDetailComponent wraps buildDetailLines).
  */
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface ContextSegmentItem {
@@ -98,8 +99,9 @@ export function renderContextRowLines(
 	width: number,
 	theme: ContextRowsTheme,
 	measure: TextMeasure = asciiTextMeasure,
+	glyphs: GlyphTheme = unicodeGlyphs,
 ): string[] {
-	const gutter = theme.gutter ?? "▌";
+	const gutter = theme.gutter ?? glyphs.indicator.gutter;
 	return rows.map((row) => {
 		const indent = "  ".repeat(row.depth);
 		const text = row.isHeader ? theme.header(row.text) : `${indent}${row.text}`;
@@ -156,9 +158,10 @@ export function renderContextUsageBar(
 	width: number,
 	capacity?: number,
 	usedTokens?: number,
+	glyphs: GlyphTheme = unicodeGlyphs,
 ): string {
 	const estimatedSum = segments.reduce((sum, segment) => sum + segment.estimatedTokens, 0);
-	if (estimatedSum <= 0 || width <= 0) return theme.empty("░".repeat(Math.max(0, width)));
+	if (estimatedSum <= 0 || width <= 0) return theme.empty(glyphs.progress.empty.repeat(Math.max(0, width)));
 	const realUsed = usedTokens ?? estimatedSum;
 	const usedWidth = capacity !== undefined ? Math.max(0, Math.min(width, Math.round((realUsed / capacity) * width))) : width;
 
@@ -170,9 +173,9 @@ export function renderContextUsageBar(
 	let output = "";
 	nonZero.forEach((segment, index) => {
 		const cells = cellCounts[index] ?? 0;
-		if (cells > 0) output += theme.colorFor(segment.key)("█".repeat(cells));
+		if (cells > 0) output += theme.colorFor(segment.key)(glyphs.progress.filled.repeat(cells));
 	});
 	const emptyWidth = width - usedWidth;
-	if (emptyWidth > 0) output += theme.empty("░".repeat(emptyWidth));
+	if (emptyWidth > 0) output += theme.empty(glyphs.progress.empty.repeat(emptyWidth));
 	return output;
 }

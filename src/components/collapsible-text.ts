@@ -4,6 +4,7 @@
  * replaced by the TextMeasure port's own optional wrapTextWithAnsi method.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 const DEFAULT_COLLAPSED_LINES = 5;
@@ -15,6 +16,7 @@ export interface CollapsibleTextOptions {
 	headerStyle?: (s: string) => string;
 	textStyle?: (s: string) => string;
 	measure?: TextMeasure;
+	glyphs?: GlyphTheme;
 }
 
 /**
@@ -31,6 +33,7 @@ export class CollapsibleText implements Component {
 	private readonly headerStyle: (s: string) => string;
 	private readonly textStyle: (s: string) => string;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphTheme;
 
 	constructor(opts: CollapsibleTextOptions) {
 		this.lines = opts.text.split("\n");
@@ -39,6 +42,7 @@ export class CollapsibleText implements Component {
 		this.headerStyle = opts.headerStyle ?? ((s) => s);
 		this.textStyle = opts.textStyle ?? ((s) => s);
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 	}
 
 	get collapsed(): boolean {
@@ -75,7 +79,7 @@ export class CollapsibleText implements Component {
 			return this.renderLines(this.lines, pad, contentWidth);
 		}
 
-		const indicator = this._collapsed ? "▸" : "▾";
+		const indicator = this._collapsed ? this.glyphs.indicator.collapsed : this.glyphs.indicator.expanded;
 		const hidden = this.lines.length - this.collapsedLines;
 		const summary = this._collapsed
 			? `${indicator} ${this.lines.length} lines (+${hidden} hidden)`

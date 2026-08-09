@@ -1,4 +1,5 @@
 import type { Component } from "../component.js";
+import type { GlyphTheme } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 import { type BoxBorderStyle, renderBox } from "./box.js";
 
@@ -16,6 +17,7 @@ export interface CardOptions {
 	selected?: boolean;
 	theme: CardTheme;
 	borderStyle?: BoxBorderStyle;
+	glyphs?: GlyphTheme;
 	measure?: TextMeasure;
 }
 
@@ -47,6 +49,7 @@ export class Card implements Component {
 			width,
 			lines,
 			borderStyle: this.options.borderStyle,
+			glyphs: this.options.glyphs,
 			frameStyle: this.selected ? this.options.theme.selectedBorder : this.options.theme.border,
 			lineStyle: this.selected ? this.options.theme.selectedContent : this.options.theme.content,
 			measure: this.measure,

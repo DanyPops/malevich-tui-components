@@ -4,11 +4,13 @@
  * import replaced by an injected TextMeasure port.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export interface SplitPaneOptions {
 	ratio?: number;
 	borderChar?: string;
+	glyphs?: GlyphTheme;
 	minLeftWidth?: number;
 	minRightWidth?: number;
 	measure?: TextMeasure;
@@ -28,7 +30,7 @@ export class SplitPane implements Component {
 		opts: SplitPaneOptions = {},
 	) {
 		this.ratio = opts.ratio ?? 0.5;
-		this.borderChar = opts.borderChar ?? "│";
+		this.borderChar = opts.borderChar ?? opts.glyphs?.box.light.vertical ?? unicodeGlyphs.box.light.vertical;
 		this.minLeftWidth = opts.minLeftWidth ?? 10;
 		this.minRightWidth = opts.minRightWidth ?? 10;
 		this.measure = opts.measure ?? asciiTextMeasure;

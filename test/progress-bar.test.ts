@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { ProgressBar } from "../src/components/progress-bar.ts";
+import { calculateProgressBarGeometry, createProgressBarRenderer, ProgressBar, renderProgressBar } from "../src/components/progress-bar.ts";
 
 describe("ProgressBar", () => {
 	it("renders a filled/empty bar proportional to value/max, plus a percentage", () => {
@@ -69,6 +69,23 @@ describe("ProgressBar", () => {
 	it("format() renders just the bar glyphs, no label or percentage", () => {
 		const bar = new ProgressBar({ value: 0, max: 2, width: 4 });
 		expect(bar.format()).toBe("░░░░");
+	});
+
+	it("keeps geometry independent from selectable block rendering", () => {
+		const geometry = calculateProgressBarGeometry(7, 10, 10);
+		expect(geometry).toEqual({ ratio: 0.7, width: 10, filledCells: 7 });
+		expect(renderProgressBar(geometry, { filled: "■", empty: " ", left: "|", right: "|" })).toBe("|■■■■■■■   |");
+		expect(createProgressBarRenderer("ascii")(geometry)).toBe("[#######---]");
+	});
+
+	it("supports smooth fractional blocks without changing geometry math", () => {
+		const bar = new ProgressBar({ value: 1, max: 3, width: 8, glyphs: "smooth" });
+		expect(bar.format()).toBe("|██▋     |");
+	});
+
+	it("accepts a caller-owned renderer strategy", () => {
+		const bar = new ProgressBar({ value: 1, max: 2, width: 4, renderer: ({ filledCells, width }) => `${filledCells}/${width}` });
+		expect(bar.format()).toBe("2/4");
 	});
 
 	it("uses a custom TextMeasure when provided", () => {

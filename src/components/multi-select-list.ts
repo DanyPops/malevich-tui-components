@@ -1,4 +1,5 @@
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
@@ -132,6 +133,7 @@ export interface MultiSelectListOptions<T> {
 	readonly theme: MultiSelectListTheme;
 	readonly maxVisibleRows?: number;
 	readonly measure?: TextMeasure;
+	readonly glyphs?: GlyphTheme;
 	readonly matchesKey?: KeyMatcher;
 	readonly wrapNavigation?: boolean;
 	readonly showNumbers?: boolean;
@@ -147,6 +149,7 @@ export class MultiSelectList<T> implements Component {
 	private readonly items: readonly MultiSelectListItem<T>[];
 	private readonly theme: MultiSelectListTheme;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphTheme;
 	private readonly matchesKey: KeyMatcher;
 	private readonly showNumbers: boolean;
 	private readonly onToggle: MultiSelectListOptions<T>["onToggle"];
@@ -162,6 +165,7 @@ export class MultiSelectList<T> implements Component {
 		this.items = options.items;
 		this.theme = options.theme;
 		this.measure = options.measure ?? asciiTextMeasure;
+		this.glyphs = options.glyphs ?? unicodeGlyphs;
 		this.matchesKey = options.matchesKey ?? legacyKeyMatcher;
 		this.showNumbers = options.showNumbers ?? true;
 		this.maxVisibleRows = boundedRowCount(options.maxVisibleRows);
@@ -284,10 +288,14 @@ export class MultiSelectList<T> implements Component {
 
 	private renderItem(item: MultiSelectListItem<T>, index: number, width: number): string[] {
 		const focused = index === this.model.focusedIndex;
-		const cursor = focused ? this.theme.cursor("→") : " ";
+		const cursor = focused ? this.theme.cursor(this.glyphs.indicator.cursor) : " ";
 		const number = this.showNumbers && item.numberLabel !== false ? `${item.numberLabel ?? item.shortcut ?? index + 1}. ` : "";
 		const checkbox =
-			item.toggleable === false ? "" : this.model.isChecked(index) ? this.theme.checked("[✓] ") : this.theme.unchecked("[ ] ");
+			item.toggleable === false
+				? ""
+				: this.model.isChecked(index)
+					? this.theme.checked(`[${this.glyphs.indicator.checked}] `)
+					: this.theme.unchecked(`[${this.glyphs.indicator.unchecked}] `);
 		const label = focused ? this.theme.selectedLabel(item.label) : this.theme.label(item.label);
 		const lines = [this.measure.truncateToWidth(`${cursor} ${number}${checkbox}${label}`, width, "")];
 		if (item.description) {

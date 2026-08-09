@@ -1,26 +1,15 @@
+import { type BoxGlyphs, type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 
 export type BoxBorderStyle = "rounded" | "light" | "heavy";
-
-export interface BoxBorder {
-	horizontal: string;
-	vertical: string;
-	topLeft: string;
-	topRight: string;
-	bottomLeft: string;
-	bottomRight: string;
-}
-
-const BOX: Record<BoxBorderStyle, BoxBorder> = {
-	rounded: { horizontal: "─", vertical: "│", topLeft: "╭", topRight: "╮", bottomLeft: "╰", bottomRight: "╯" },
-	light: { horizontal: "─", vertical: "│", topLeft: "┌", topRight: "┐", bottomLeft: "└", bottomRight: "┘" },
-	heavy: { horizontal: "━", vertical: "┃", topLeft: "┏", topRight: "┓", bottomLeft: "┗", bottomRight: "┛" },
-};
+export type BoxBorder = BoxGlyphs;
 
 export interface RenderBoxOptions {
 	width: number;
 	lines: string[];
 	borderStyle?: BoxBorderStyle;
+	/** Complete host glyph policy. Defaults to unicodeGlyphs. */
+	glyphs?: GlyphTheme;
 	frameStyle?: (text: string) => string;
 	lineStyle?: (text: string) => string;
 	topLabel?: string;
@@ -33,7 +22,7 @@ export interface RenderBoxOptions {
 export function renderBox(options: RenderBoxOptions): string[] {
 	const width = Math.max(2, options.width);
 	const innerWidth = Math.max(0, width - 2);
-	const border = BOX[options.borderStyle ?? "light"];
+	const border = (options.glyphs ?? unicodeGlyphs).box[options.borderStyle ?? "light"];
 	const frameStyle = options.frameStyle ?? ((text: string) => text);
 	const lineStyle = options.lineStyle ?? ((text: string) => text);
 	const topLabelStyle = options.topLabelStyle ?? ((text: string) => text);

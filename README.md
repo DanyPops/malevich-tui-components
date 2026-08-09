@@ -39,7 +39,7 @@ handling; components default to plain-ASCII measurement otherwise.
 | Component | Description |
 |---|---|
 | `Table` | Tabular data with auto-sized or fixed column widths, alignment, and a header separator. |
-| `ProgressBar` | A single-line `label filled/empty-bar pct%` meter. |
+| `ProgressBar` | A single-line `label filled/empty-bar pct%` meter. Progress geometry is renderer-neutral; choose `shade`, bordered `smooth`, bordered `blocks`, `ascii`, a custom glyph set, or a completely custom renderer. |
 | `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. `framed: false` omits its own top/bottom rule for nesting inside a host's own already-drawn border (e.g. an Envelope). |
 | `Toast` | A single auto-dismissing message (or wrapped Component). |
 | `NotificationQueue` | A capped, auto-expiring queue of leveled (info/success/warning/error) notifications. |
@@ -68,12 +68,24 @@ handling; components default to plain-ASCII measurement otherwise.
 
 | Export | Description |
 |---|---|
-| `GlyphSet` / `unicodeGlyphs` / `asciiGlyphs` | Injectable rule/tree-connector characters, accepted via `glyphs` on `Table`, `Dialog`, `BorderedSelectPanel`, `SeparatorLine`, and `TreeView` -- swap in `asciiGlyphs` for terminals/fonts that render box-drawing poorly. Every component defaults to `unicodeGlyphs`. |
+| `GlyphTheme` / `unicodeGlyphs` / `asciiGlyphs` | Complete injectable drawing policy for lines, boxes, trees, progress tracks, scrollbars, charts, spinners, disclosure/selection indicators, masks, and gutters. Drawing components default to `unicodeGlyphs`; pass `asciiGlyphs` through a component's `glyphs` or `glyphTheme` option for an ASCII visual policy. Component-specific character options still override the shared policy. |
+| `calculateProgressBarGeometry` / `renderProgressBar` | Two-stage progress primitive: calculate normalized drawable-cell geometry without choosing characters, then render that geometry through `ProgressGlyphs`. “Geometry” is intentional UI-pipeline terminology; compositing means combining already-rendered layers and is owned by the host TUI. |
 | `deriveTableColumns` | Given `unknown[]`, derives `Table`-ready columns/rows when every item is a plain object: unions the keys, stringifies non-string values. Returns `undefined` for non-tabular input. |
 | `firstDistinctStyle` | Given a baseline-styled string and candidate-styled strings (in preference order), returns the first candidate that's visually distinct from the baseline, else a fallback -- the fix for a theme that maps two semantic color tokens to the same underlying color, making a more specific token look identical to plain text. |
 | `renderFramedPanel` | The rule+title+content+rule scaffold shared by `Dialog`, `Menu`, and `BorderedSelectPanel` -- assembly only, callers pass already-styled/measured lines. |
 | `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `TabbedContainer`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
 | `findMnemonicConflicts` / `assertNoMnemonicConflicts` | Tree-style accelerator-key conflict detection -- given a `MnemonicContext` tree describing which key bindings are reachable together (a root's own plus whichever single child is active), reports any key bound to more than one distinct action along a path. Meant to run as a standing test assertion against a real application's own keybinding tree. |
+
+## Rendering architecture
+
+Malevich separates four concerns:
+
+1. **State and interaction** update component models.
+2. **Measurement/layout** calculate terminal-cell geometry through host-supplied `TextMeasure` ports.
+3. **Rendering** maps geometry and state to strings using an injected `GlyphTheme` and caller-supplied style functions.
+4. **Compositing** is left to the host TUI, which mounts Malevich's rendered lines into its own surface/layer tree.
+
+The distinction is visible in the progress API: `calculateProgressBarGeometry()` normalizes `value/max` and calculates filled cells; `renderProgressBar()` chooses full, partial, empty, and delimiter characters. Other geometry-heavy primitives use the same boundary where it pays for itself, while simple text components remain simple rather than acquiring ceremonial layout objects.
 
 ## License
 

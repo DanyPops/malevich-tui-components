@@ -7,6 +7,7 @@
  * TextMeasure port.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 import { type BoxBorderStyle, renderBox } from "./box.js";
 
@@ -14,6 +15,7 @@ export interface EnvelopeOptions {
 	title: string;
 	collapsed?: boolean;
 	borderStyle?: BoxBorderStyle;
+	glyphs?: GlyphTheme;
 	style?: (s: string) => string;
 	titleStyle?: (s: string) => string;
 	/** Defaults to ASCII-only measurement (raw string length, blind to ANSI escape codes). Unsafe the moment content is styled -- pad computation for the right border will land at a different column on every line depending on how much styling that line happens to carry. Pass a host's real visibleWidth/truncateToWidth (e.g. pi-tui's or alef-tui's) whenever content might contain real ANSI. */
@@ -26,6 +28,7 @@ export class Envelope implements Component {
 	private title: string;
 	private content: Component | null = null;
 	private readonly borderStyle: BoxBorderStyle;
+	private readonly glyphs: GlyphTheme;
 	private readonly style: (s: string) => string;
 	private readonly titleStyle: (s: string) => string;
 	private readonly measure: TextMeasure;
@@ -34,6 +37,7 @@ export class Envelope implements Component {
 		this.title = opts.title;
 		this._collapsed = opts.collapsed ?? false;
 		this.borderStyle = opts.borderStyle ?? "rounded";
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 		this.style = opts.style ?? ((s) => s);
 		this.titleStyle = opts.titleStyle ?? ((s) => s);
 		this.measure = opts.measure ?? asciiTextMeasure;
@@ -57,13 +61,14 @@ export class Envelope implements Component {
 	}
 
 	render(width: number): string[] {
-		const indicator = this._collapsed ? "▸" : "▾";
+		const indicator = this._collapsed ? this.glyphs.indicator.collapsed : this.glyphs.indicator.expanded;
 		const titleText = this.measure.truncateToWidth(` ${indicator} ${this.title} `, width - 4, "…");
 		if (this._collapsed || !this.content) {
 			return renderBox({
 				width,
 				lines: [],
 				borderStyle: this.borderStyle,
+				glyphs: this.glyphs,
 				frameStyle: this.style,
 				topLabel: titleText,
 				topLabelStyle: this.titleStyle,
@@ -76,6 +81,7 @@ export class Envelope implements Component {
 			width,
 			lines: this.content.render(inner).map((line) => ` ${line} `),
 			borderStyle: this.borderStyle,
+			glyphs: this.glyphs,
 			frameStyle: this.style,
 			topLabel: titleText,
 			topLabelStyle: this.titleStyle,

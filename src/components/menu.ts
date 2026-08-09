@@ -4,6 +4,7 @@
  * KeyMatcher/TextMeasure ports.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
@@ -30,6 +31,7 @@ export interface MenuOptions {
 	theme: MenuTheme;
 	onClose?: () => void;
 	measure?: TextMeasure;
+	glyphs?: GlyphTheme;
 	matchesKey?: KeyMatcher;
 }
 
@@ -41,6 +43,7 @@ export class Menu implements Component {
 	private readonly title: string;
 	private readonly onClose?: () => void;
 	private readonly measure: TextMeasure;
+	private readonly glyphs: GlyphTheme;
 	private readonly matchesKey: KeyMatcher;
 
 	constructor(opts: MenuOptions) {
@@ -49,6 +52,7 @@ export class Menu implements Component {
 		this.title = opts.title ?? "";
 		this.onClose = opts.onClose;
 		this.measure = opts.measure ?? asciiTextMeasure;
+		this.glyphs = opts.glyphs ?? unicodeGlyphs;
 		this.matchesKey = opts.matchesKey ?? legacyKeyMatcher;
 	}
 
@@ -68,7 +72,7 @@ export class Menu implements Component {
 
 		return renderFramedPanel({
 			width,
-			rule: "─",
+			rule: this.glyphs.line.thin,
 			ruleStyle: theme.border,
 			titleLines: this.title ? [theme.title(this.title)] : undefined,
 			contentLines: itemLines,

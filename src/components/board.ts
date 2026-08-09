@@ -7,6 +7,7 @@
  * tabular layout and caller-supplied cell values.
  */
 import type { Component } from "../component.js";
+import { type GlyphTheme, unicodeGlyphs } from "../glyphs.js";
 import type { KeyMatcher } from "../key-matcher.js";
 import { legacyKeyMatcher } from "../key-matcher.js";
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
@@ -44,6 +45,7 @@ export interface BoardOptions<T> {
 	emptyLabel?: string;
 	minColumnWidth?: number;
 	measure?: TextMeasure;
+	glyphs?: GlyphTheme;
 	matchesKey?: KeyMatcher;
 }
 
@@ -148,7 +150,7 @@ export class Board<T> implements Component {
 		emptyLabel: string,
 	): { lines: string[]; ranges: BoardItemRange[] } {
 		const headerText = col.name ? `${col.name}: ${formatBadgeCount(col.items.length)}` : formatBadgeCount(col.items.length);
-		const lines: string[] = [theme.header(headerText), theme.border("─".repeat(width))];
+		const lines: string[] = [theme.header(headerText), theme.border((this.opts.glyphs ?? unicodeGlyphs).line.thin.repeat(width))];
 		const ranges: BoardItemRange[] = [];
 
 		if (col.items.length === 0) lines.push(theme.empty(`  ${emptyLabel}`));
