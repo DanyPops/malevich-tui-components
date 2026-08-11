@@ -11,7 +11,8 @@
       "files": [
         {
           "path": "src/component.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/component.ts"
         }
       ]
     },
@@ -23,7 +24,8 @@
       "files": [
         {
           "path": "src/glyphs.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/glyphs.ts"
         }
       ]
     },
@@ -35,7 +37,8 @@
       "files": [
         {
           "path": "src/key-matcher.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/key-matcher.ts"
         }
       ]
     },
@@ -47,7 +50,8 @@
       "files": [
         {
           "path": "src/mnemonics.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/mnemonics.ts"
         }
       ]
     },
@@ -59,7 +63,8 @@
       "files": [
         {
           "path": "src/style-cascade.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/style-cascade.ts"
         }
       ]
     },
@@ -71,7 +76,8 @@
       "files": [
         {
           "path": "src/text-measure.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/text-measure.ts"
         }
       ]
     },
@@ -83,7 +89,8 @@
       "files": [
         {
           "path": "src/truncation.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/truncation.ts"
         }
       ]
     },
@@ -95,7 +102,8 @@
       "files": [
         {
           "path": "src/components/badge.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/badge.ts"
         }
       ],
       "registryDependencies": [
@@ -110,7 +118,8 @@
       "files": [
         {
           "path": "src/components/board.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/board.ts"
         }
       ],
       "registryDependencies": [
@@ -129,7 +138,8 @@
       "files": [
         {
           "path": "src/components/bordered-select-panel.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/bordered-select-panel.ts"
         }
       ],
       "registryDependencies": [
@@ -147,7 +157,8 @@
       "files": [
         {
           "path": "src/components/bounded-table.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/bounded-table.ts"
         }
       ],
       "registryDependencies": [
@@ -165,7 +176,8 @@
       "files": [
         {
           "path": "src/components/box.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/box.ts"
         }
       ],
       "registryDependencies": [
@@ -181,7 +193,8 @@
       "files": [
         {
           "path": "src/components/card.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/card.ts"
         }
       ],
       "registryDependencies": [
@@ -199,7 +212,8 @@
       "files": [
         {
           "path": "src/components/collapsible-text.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/collapsible-text.ts"
         }
       ],
       "registryDependencies": [
@@ -216,7 +230,8 @@
       "files": [
         {
           "path": "src/components/collapsible.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/collapsible.ts"
         }
       ],
       "registryDependencies": [
@@ -232,7 +247,8 @@
       "files": [
         {
           "path": "src/components/context-breakdown.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/context-breakdown.ts"
         }
       ],
       "registryDependencies": [
@@ -248,7 +264,8 @@
       "files": [
         {
           "path": "src/components/dag-view.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/dag-view.ts"
         }
       ],
       "registryDependencies": [
@@ -265,7 +282,8 @@
       "files": [
         {
           "path": "src/components/detail-view.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/detail-view.ts"
         }
       ],
       "registryDependencies": [
@@ -280,7 +298,8 @@
       "files": [
         {
           "path": "src/components/dialog.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/dialog.ts"
         }
       ],
       "registryDependencies": [
@@ -299,7 +318,8 @@
       "files": [
         {
           "path": "src/components/diff.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/diff.ts"
         }
       ],
       "registryDependencies": [
@@ -314,7 +334,8 @@
       "files": [
         {
           "path": "src/components/envelope.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/envelope.ts"
         }
       ],
       "registryDependencies": [
@@ -332,7 +353,8 @@
       "files": [
         {
           "path": "src/components/form.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/form.ts"
         }
       ],
       "registryDependencies": [
@@ -349,7 +371,8 @@
       "files": [
         {
           "path": "src/components/framed-panel.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/framed-panel.ts"
         }
       ]
     },
@@ -361,7 +384,8 @@
       "files": [
         {
           "path": "src/components/history-chart.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/history-chart.ts"
         }
       ],
       "registryDependencies": [
@@ -378,7 +402,8 @@
       "files": [
         {
           "path": "src/components/masked-input.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/masked-input.ts"
         }
       ],
       "registryDependencies": [
@@ -395,7 +420,8 @@
       "files": [
         {
           "path": "src/components/menu.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/menu.ts"
         }
       ],
       "registryDependencies": [
@@ -414,7 +440,8 @@
       "files": [
         {
           "path": "src/components/multi-select-list.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/multi-select-list.ts"
         }
       ],
       "registryDependencies": [
@@ -432,7 +459,8 @@
       "files": [
         {
           "path": "src/components/notification.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/notification.ts"
         }
       ],
       "registryDependencies": [
@@ -448,7 +476,8 @@
       "files": [
         {
           "path": "src/components/progress-bar.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/progress-bar.ts"
         }
       ],
       "registryDependencies": [
@@ -465,7 +494,8 @@
       "files": [
         {
           "path": "src/components/scroll-view.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/scroll-view.ts"
         }
       ],
       "registryDependencies": [
@@ -483,7 +513,8 @@
       "files": [
         {
           "path": "src/components/separator-line.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/separator-line.ts"
         }
       ],
       "registryDependencies": [
@@ -500,7 +531,8 @@
       "files": [
         {
           "path": "src/components/spinner.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/spinner.ts"
         }
       ],
       "registryDependencies": [
@@ -515,7 +547,8 @@
       "files": [
         {
           "path": "src/components/split-pane.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/split-pane.ts"
         }
       ],
       "registryDependencies": [
@@ -532,7 +565,8 @@
       "files": [
         {
           "path": "src/components/tabbed-container.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/tabbed-container.ts"
         }
       ],
       "registryDependencies": [
@@ -549,7 +583,8 @@
       "files": [
         {
           "path": "src/components/table.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/table.ts"
         }
       ],
       "registryDependencies": [
@@ -566,7 +601,8 @@
       "files": [
         {
           "path": "src/components/tab-menu.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/tab-menu.ts"
         }
       ],
       "registryDependencies": [
@@ -582,7 +618,8 @@
       "files": [
         {
           "path": "src/components/text.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/text.ts"
         }
       ],
       "registryDependencies": [
@@ -598,7 +635,8 @@
       "files": [
         {
           "path": "src/components/toast.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/toast.ts"
         }
       ],
       "registryDependencies": [
@@ -614,7 +652,8 @@
       "files": [
         {
           "path": "src/components/tree-view.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/tree-view.ts"
         }
       ],
       "registryDependencies": [
@@ -631,7 +670,8 @@
       "files": [
         {
           "path": "src/components/truncated-list.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/components/truncated-list.ts"
         }
       ],
       "registryDependencies": [
