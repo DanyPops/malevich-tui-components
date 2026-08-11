@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "malevich-tui-components",
+  "homepage": "https://github.com/DanyPops/malevich-tui-components",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "badge",
+      "type": "registry:lib",
+      "title": "Badge",
+      "description": "A single-line `label: count` indicator, with the count abbreviated for large values (1.5k, 2.0M). Plain TypeScript, zero React/Tailwind/JSX -- validates shadcn's registry:lib distribution path for a framework-agnostic file.",
+      "files": [
+        {
+          "path": "src/components/badge.ts",
+          "type": "registry:lib"
+        }
+      ]
+    }
+  ]
+}
