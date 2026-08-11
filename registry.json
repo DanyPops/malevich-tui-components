@@ -4,16 +4,638 @@
   "homepage": "https://github.com/DanyPops/malevich-tui-components",
   "items": [
     {
-      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "component",
+      "type": "registry:lib",
+      "title": "Component",
+      "description": "Structurally identical to `@earendil-works/pi-tui`'s and `@dpopsuev/alef-tui`'s own `Component` interface (one is a fork of the other) -- defined here so Malevich depends on neither package directly.",
+      "files": [
+        {
+          "path": "src/component.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "glyphs",
+      "type": "registry:lib",
+      "title": "Glyphs",
+      "description": "Characters used to draw one rectangular frame.",
+      "files": [
+        {
+          "path": "src/glyphs.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "key-matcher",
+      "type": "registry:lib",
+      "title": "Key Matcher",
+      "description": "A component that needs to recognize a named key (not just a literal character) takes this as an injected port rather than importing a concrete implementation. Both `@earendil-works/pi-tui` and `@dpopsuev/alef-tui` already export a correct `matchesKey(data, keyId)` covering legacy terminal sequences and the Kitty keyboard protocol -- a host wires its own straight through. `legacyKeyMatcher` belo...",
+      "files": [
+        {
+          "path": "src/key-matcher.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "mnemonics",
+      "type": "registry:lib",
+      "title": "Mnemonics",
+      "description": "Tree-style mnemonic/accelerator conflict detection -- the same rule real menu systems have used for decades (Win32, Motif, Swing, JavaFX): \"no two commands available from the same menu bar should have the same accelerator key.\" Conflicts are scoped to what's actually reachable at once (a root's own bindings plus whichever single child is currently active), not global uniqueness -- two sibling c...",
+      "files": [
+        {
+          "path": "src/mnemonics.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "style-cascade",
+      "type": "registry:lib",
+      "title": "Style Cascade",
+      "description": "A host theme often maps several distinct semantic tokens (e.g. a \"muted border\" color and a \"dim\" color) to the exact same underlying color when it hasn't bothered defining every token distinctly. Styling with the more specific token then looks identical to styling with plain text -- not wrong, just visually flat. This is the generic algorithm behind that fix: try each candidate in preference o...",
+      "files": [
+        {
+          "path": "src/style-cascade.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "text-measure",
+      "type": "registry:lib",
+      "title": "Text Measure",
+      "description": "A component that needs to measure/truncate text to a column width takes this as an injected port rather than importing a concrete implementation. Both `@earendil-works/pi-tui` and `@dpopsuev/alef-tui` already export a correct, Unicode-width-aware, ANSI-stripping pair of functions matching this exact shape (`visibleWidth`/`truncateToWidth`) -- a host wires its own straight through. `asciiTextMea...",
+      "files": [
+        {
+          "path": "src/text-measure.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "truncation",
+      "type": "registry:lib",
+      "title": "Truncation",
+      "description": "Shared arithmetic behind every \"show the first N, note how many more remain unless Pi's own expanded flag says otherwise\" component in this library (TruncatedList, Table via renderBoundedTable). Kept as one internal function rather than let each component reimplement `Math.min`/subtraction on its own -- that duplication already happened once (a hand-rolled copy in a consumer had drifted to a fl...",
+      "files": [
+        {
+          "path": "src/truncation.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:lib",
       "title": "Badge",
-      "description": "A single-line `label: count` indicator, with the count abbreviated for large values (1.5k, 2.0M). Plain TypeScript, zero React/Tailwind/JSX -- validates shadcn's registry:lib distribution path for a framework-agnostic file.",
+      "description": "Adapted from @dpopsuev/alef-tui's Badge component (MIT, Mario Zechner) -- its `badge()` count-formatting helper (design/typography.js) is inlined directly rather than pulling in Alef's design system.",
       "files": [
         {
           "path": "src/components/badge.ts",
           "type": "registry:lib"
         }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component"
+      ]
+    },
+    {
+      "name": "board",
+      "type": "registry:lib",
+      "title": "Board",
+      "description": "Generic multi-column card board (Kanban-style): items are grouped into a fixed set of columns, one card per item, with keyboard-navigable selection across the whole grid. Card content is entirely caller-supplied (renderItem) -- this component only owns column layout, header counts, and selection movement, the same split Table draws between generic tabular layout and caller-supplied cell values.",
+      "files": [
+        {
+          "path": "src/components/board.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/badge"
+      ]
+    },
+    {
+      "name": "bordered-select-panel",
+      "type": "registry:lib",
+      "title": "Bordered Select Panel",
+      "description": "Formalizes a border+title+list+help scaffold hand-rolled independently in five codebases (Enigma, Jittor, pi-tickets, packed, pipes). Owns no list-selection logic -- wraps a host-provided list Component (the host's own SelectList) and delegates handleInput/invalidate to it.",
+      "files": [
+        {
+          "path": "src/components/bordered-select-panel.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/framed-panel"
+      ]
+    },
+    {
+      "name": "bounded-table",
+      "type": "registry:lib",
+      "title": "Bounded Table",
+      "description": "Table has no row-count bound of its own (\"no scrolling/pagination of its own -- a host embeds this inside a scrollable container for large row counts\", per its own doc comment) -- every consumer that wants Pi's familiar \"show the first N, note how many more remain unless expanded\" shape for a Table's rows was either duplicating TruncatedList's own arithmetic by hand (a real instance of this: a ...",
+      "files": [
+        {
+          "path": "src/components/bounded-table.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/truncation",
+        "DanyPops/malevich-tui-components/table"
+      ]
+    },
+    {
+      "name": "box",
+      "type": "registry:lib",
+      "title": "Box",
+      "description": "A bordered box element: border-style glyph selection plus content-line assembly. A pure Element -- callers pass already-styled/measured lines.",
+      "files": [
+        {
+          "path": "src/components/box.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:lib",
+      "title": "Card",
+      "description": "Card -- a Malevich TUI component.",
+      "files": [
+        {
+          "path": "src/components/card.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/box"
+      ]
+    },
+    {
+      "name": "collapsible-text",
+      "type": "registry:lib",
+      "title": "Collapsible Text",
+      "description": "Adapted from @dpopsuev/alef-tui's CollapsibleText component (MIT, Mario Zechner) -- same logic, with the direct `wrapTextWithAnsi` import replaced by the TextMeasure port's own optional wrapTextWithAnsi method.",
+      "files": [
+        {
+          "path": "src/components/collapsible-text.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:lib",
+      "title": "Collapsible",
+      "description": "Adapted from @dpopsuev/alef-tui's Collapsible component (MIT, Mario Zechner) -- zero dependencies beyond Component, no adaptation needed.",
+      "files": [
+        {
+          "path": "src/components/collapsible.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs"
+      ]
+    },
+    {
+      "name": "context-breakdown",
+      "type": "registry:lib",
+      "title": "Context Breakdown",
+      "description": "Extracted from pi-papyrus's ContextViewport -- the pure segment-flattening and stacked-usage-bar rendering half of \"show where a context window's tokens went, broken into segments and their items, honestly distinguishing real usage from estimates\". Deliberately NOT a stateful scroll-owning Component, matching buildDetailLines' own division of labor: scroll windowing needs a host's own TUI/termi...",
+      "files": [
+        {
+          "path": "src/components/context-breakdown.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "dag-view",
+      "type": "registry:lib",
+      "title": "Dag View",
+      "description": "TreeView only handles single-parent hierarchies (containment). A real dependency graph -- a node depending on several siblings -- isn't tree-shaped at all. DagView fills that gap, but stays a pure renderer over an already-computed topological ordering, matching TreeView's own and HistoryChart's own division of labor: a caller (e.g. a task scheduler's own ready/blocked/invalid classification) co...",
+      "files": [
+        {
+          "path": "src/components/dag-view.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/truncation"
+      ]
+    },
+    {
+      "name": "detail-view",
+      "type": "registry:lib",
+      "title": "Detail View",
+      "description": "Extracted from @danypops/pi-tickets' IssueDetailComponent -- the pure line-building half of \"show one record's full fields, a free-text body, and a thread of dated sub-items\" (a ticket's fields/description/comments; equally a Task's fields/body/history, or a CI run's fields/log/stages). Deliberately NOT a stateful scroll-owning Component, matching Board's own division of labor: dynamic terminal...",
+      "files": [
+        {
+          "path": "src/components/detail-view.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:lib",
+      "title": "Dialog",
+      "description": "Adapted from @dpopsuev/alef-tui's Dialog component (MIT, Mario Zechner) -- same rendering logic, with the direct `truncateToWidth` import replaced by an injected TextMeasure port.",
+      "files": [
+        {
+          "path": "src/components/dialog.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/framed-panel"
+      ]
+    },
+    {
+      "name": "diff",
+      "type": "registry:lib",
+      "title": "Diff",
+      "description": "Real unified-diff rendering (the `diff -u`/`git diff` format: `diff --git`/`index`/`---`/`+++` file headers, `@@ -a,b +c,d @@` hunk headers, then ` `/`+`/`-`-prefixed body lines) -- distinct from pi-coding-agent's own built-in diff renderer, which operates on Pi's internal pre-reformatted \"-123 content\"/\"+123 content\" representation from its own edit pipeline, not a real unified diff string. Le...",
+      "files": [
+        {
+          "path": "src/components/diff.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "envelope",
+      "type": "registry:lib",
+      "title": "Envelope",
+      "description": "Adapted from @dpopsuev/alef-tui's Envelope component (MIT, Mario Zechner) -- design/chars.js's BOX border-glyph sets are inlined directly (only the corner/edge glyphs Envelope actually uses, not alef-tui's full tee/cross box-drawing set), and the direct `truncateToWidth`/`visibleWidth` import is replaced by an injected TextMeasure port.",
+      "files": [
+        {
+          "path": "src/components/envelope.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/box"
+      ]
+    },
+    {
+      "name": "form",
+      "type": "registry:lib",
+      "title": "Form",
+      "description": "Generalized from @danypops/enigma's ApiKeyRegistrationForm (a fixed 3-field form) into an N-field form keyed by a Record result. Owns no text-input implementation -- a host passes its own Input (or Malevich's MaskedInput) per field; this owns focus navigation, validation, and layout only.",
+      "files": [
+        {
+          "path": "src/components/form.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "framed-panel",
+      "type": "registry:lib",
+      "title": "Framed Panel",
+      "description": "The rule+title+content+rule scaffold shared by Dialog, Menu, and BorderedSelectPanel, previously hand-rolled once per component with a slightly different line order in each. A pure Element -- callers pass already-styled/measured lines, this only owns assembly.",
+      "files": [
+        {
+          "path": "src/components/framed-panel.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "history-chart",
+      "type": "registry:lib",
+      "title": "History Chart",
+      "description": "Generalizes the cumulative stacked-bar rendering core of pi-jittor's renderChart (extension/src/usage.ts). Jittor's own data-fetching, period navigation, and token/cost formatting stay there.",
+      "files": [
+        {
+          "path": "src/components/history-chart.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "masked-input",
+      "type": "registry:lib",
+      "title": "Masked Input",
+      "description": "Generalized from @danypops/enigma's MaskedInput (extension/src/ apikey-form.ts). Renders only mask glyphs so a typed/pasted secret never reaches the visible transcript; includes bracketed-paste handling so a terminal paste isn't silently dropped.",
+      "files": [
+        {
+          "path": "src/components/masked-input.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher"
+      ]
+    },
+    {
+      "name": "menu",
+      "type": "registry:lib",
+      "title": "Menu",
+      "description": "Adapted from @dpopsuev/alef-tui's Menu component (MIT, Mario Zechner) -- `matchesKey`/`truncateToWidth` imports replaced by injected KeyMatcher/TextMeasure ports.",
+      "files": [
+        {
+          "path": "src/components/menu.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure",
+        "DanyPops/malevich-tui-components/framed-panel"
+      ]
+    },
+    {
+      "name": "multi-select-list",
+      "type": "registry:lib",
+      "title": "Multi Select List",
+      "description": "Multi Select List -- a Malevich TUI component.",
+      "files": [
+        {
+          "path": "src/components/multi-select-list.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "notification",
+      "type": "registry:lib",
+      "title": "Notification",
+      "description": "Adapted from @dpopsuev/alef-tui's NotificationQueue component (MIT, Mario Zechner) -- same logic, with the direct `truncateToWidth` import replaced by an injected TextMeasure port, and Date.now() replaced by an injected clock so expiry is deterministic in tests.",
+      "files": [
+        {
+          "path": "src/components/notification.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "progress-bar",
+      "type": "registry:lib",
+      "title": "Progress Bar",
+      "description": "Adapted from @dpopsuev/alef-tui's ProgressBar component (MIT, Mario Zechner) -- same rendering logic, with the direct `visibleWidth` import replaced by an injected TextMeasure port so this file has no dependency on any specific host TUI package.",
+      "files": [
+        {
+          "path": "src/components/progress-bar.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "scroll-view",
+      "type": "registry:lib",
+      "title": "Scroll View",
+      "description": "Adapted from @dpopsuev/alef-tui's ScrollView component (MIT, Mario Zechner) -- same logic, with the direct `truncateToWidth` import replaced by an injected TextMeasure port.",
+      "files": [
+        {
+          "path": "src/components/scroll-view.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "separator-line",
+      "type": "registry:lib",
+      "title": "Separator Line",
+      "description": "Adapted from @dpopsuev/alef-tui's SeparatorLine component (MIT, Mario Zechner) -- design/chars.js's SEPARATOR weight glyphs are inlined directly, and the direct `truncateToWidth`/`visibleWidth` import is replaced by an injected TextMeasure port.",
+      "files": [
+        {
+          "path": "src/components/separator-line.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:lib",
+      "title": "Spinner",
+      "description": "Spinner -- a Malevich TUI component.",
+      "files": [
+        {
+          "path": "src/components/spinner.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/glyphs"
+      ]
+    },
+    {
+      "name": "split-pane",
+      "type": "registry:lib",
+      "title": "Split Pane",
+      "description": "Adapted from @dpopsuev/alef-tui's SplitPane component (MIT, Mario Zechner) -- same logic, with the direct `truncateToWidth`/`visibleWidth` import replaced by an injected TextMeasure port.",
+      "files": [
+        {
+          "path": "src/components/split-pane.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "tabbed-container",
+      "type": "registry:lib",
+      "title": "Tabbed Container",
+      "description": "A persistent tab bar (every tab's label always visible, the current one highlighted) over one swappable child Component's own render/input -- the composable primitive an ad hoc \"close this overlay, open a different one\" panel switch was standing in for. Left/Right cycle tabs (collision-free: no per-tab content here binds those); every other key delegates straight to the active tab's own content...",
+      "files": [
+        {
+          "path": "src/components/tabbed-container.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/key-matcher",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:lib",
+      "title": "Table",
+      "description": "Adapted from @dpopsuev/alef-tui's Table component (MIT, Mario Zechner) -- same rendering logic, with the direct `visibleWidth`/`truncateToWidth` import replaced by an injected TextMeasure port so this file has no dependency on any specific host TUI package.",
+      "files": [
+        {
+          "path": "src/components/table.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "tab-menu",
+      "type": "registry:lib",
+      "title": "Tab Menu",
+      "description": "Horizontal tab bar that can descend into child levels -- a \"pick a provider, then pick a mode\" flow expressed as one walkable tree instead of a chain of separate dialogs. Enter on a node with children walks down into them; Escape walks back up one level, or cancels at the root. A node without children is a leaf: Enter resolves onSelect with its value.",
+      "files": [
+        {
+          "path": "src/components/tab-menu.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/key-matcher"
+      ]
+    },
+    {
+      "name": "text",
+      "type": "registry:lib",
+      "title": "Text",
+      "description": "Text -- a Malevich TUI component.",
+      "files": [
+        {
+          "path": "src/components/text.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:lib",
+      "title": "Toast",
+      "description": "Adapted from @dpopsuev/alef-tui's Toast component (MIT, Mario Zechner) -- same auto-dismiss logic, with the direct `truncateToWidth` import replaced by an injected TextMeasure port, and the raw setTimeout/ clearTimeout calls replaced by an injected scheduler so tests never wait on a real timer.",
+      "files": [
+        {
+          "path": "src/components/toast.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:lib",
+      "title": "Tree View",
+      "description": "Adapted from @dpopsuev/alef-tui's TreeView component (MIT, Mario Zechner) -- box-drawing constants (design/chars.js's TREE) inlined directly rather than pulled in from Alef's own design system.",
+      "files": [
+        {
+          "path": "src/components/tree-view.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/component",
+        "DanyPops/malevich-tui-components/glyphs",
+        "DanyPops/malevich-tui-components/text-measure"
+      ]
+    },
+    {
+      "name": "truncated-list",
+      "type": "registry:lib",
+      "title": "Truncated List",
+      "description": "Extracted from @danypops/pi-lector's rendering layer -- the identical \"show the first N items, append a '... K more' line for the rest\" shape was hand-duplicated across 14 call sites there (find_symbols, document_symbols, go_to_definition/find_references/hover's location lists, diagnostics, call-hierarchy directions, workspace_map, git status/log/diff, cross-workspace search, package_source can...",
+      "files": [
+        {
+          "path": "src/components/truncated-list.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "DanyPops/malevich-tui-components/truncation"
       ]
     }
   ]
