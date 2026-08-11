@@ -108,3 +108,4 @@ export {
 } from "./mnemonics.js";
 export { firstDistinctStyle } from "./style-cascade.js";
 export { asciiTextMeasure, type TextMeasure } from "./text-measure.js";
+export { formatWidgetHeader } from "./widget-header.js";
