@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { neutralizeEmbeddedFullResets } from "../src/ansi-safety.ts";
+import { neutralizeEmbeddedFullResets, safeTruncateToWidth } from "../src/ansi-safety.ts";
 
 describe("neutralizeEmbeddedFullResets", () => {
 	it("leaves plain text with no escape codes untouched", () => {
@@ -27,5 +27,31 @@ describe("neutralizeEmbeddedFullResets", () => {
 
 	it("the replacement never itself contains a background reset code (49)", () => {
 		expect(neutralizeEmbeddedFullResets("x\x1b[0m")).not.toContain(";49");
+	});
+});
+
+describe("safeTruncateToWidth", () => {
+	const fakeHostTruncate = (text: string, maxWidth: number) => `${text.slice(0, maxWidth)}\x1b[0m`;
+
+	it("truncates via the host function, then neutralizes its embedded full reset", () => {
+		expect(safeTruncateToWidth(fakeHostTruncate, "hello world", 5)).toBe("hello\x1b[22;23;24;25;27;28;29;39m");
+	});
+
+	it("passes ellipsis and pad through to the host function", () => {
+		const spy = (text: string, maxWidth: number, ellipsis?: string, pad?: boolean) => {
+			expect(ellipsis).toBe("...");
+			expect(pad).toBe(true);
+			return text.slice(0, maxWidth);
+		};
+		safeTruncateToWidth(spy, "hello", 3, "...", true);
+	});
+
+	it("degrades to the untruncated text instead of throwing when the host function isn't one", () => {
+		expect(() => safeTruncateToWidth(undefined, "hello world", 5)).not.toThrow();
+		expect(safeTruncateToWidth(undefined, "hello world", 5)).toBe("hello world");
+	});
+
+	it("still neutralizes an embedded full reset even when it fell back to the untruncated text", () => {
+		expect(safeTruncateToWidth(undefined, "hi\x1b[0m", 5)).toBe("hi\x1b[22;23;24;25;27;28;29;39m");
 	});
 });

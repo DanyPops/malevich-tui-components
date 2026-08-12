@@ -21,3 +21,45 @@
 export function neutralizeEmbeddedFullResets(text: string): string {
 	return text.replaceAll("\x1b[0m", "\x1b[22;23;24;25;27;28;29;39m");
 }
+
+/**
+ * Composes a host's own truncateToWidth (e.g. pi-tui's) with neutralizeEmbeddedFullResets --
+ * the one canonical way to get an ANSI-safe truncated string, instead of every consumer
+ * independently re-deriving this exact two-step pairing (found live, independently reimplemented
+ * across at least three call sites in two separate repos, only one of which happened to guard
+ * against a stale host resolution).
+ *
+ * `hostTruncateToWidth` is typed `unknown`, not a function signature, and checked at the call
+ * site rather than trusted: a long-running process can hold an in-memory copy of the host
+ * resolved from before some behavior existed there, while a more recently reloaded caller still
+ * assumes it's present. Falls back to the untruncated text rather than throwing -- a rare
+ * cosmetic regression (a line running long) is strictly better than a crash three frames deep
+ * inside a render call, with nothing above it in the render tree to contain the failure.
+ *
+ * neutralizeEmbeddedFullResets itself needs no equivalent guard here: it's this module's own
+ * top-level function, always defined by the time any code that successfully imported
+ * safeTruncateToWidth could be running at all. The risk this function was written to guard
+ * against is entirely on the host-supplied half, never on Malevich's own internals -- a
+ * consumer that imports safeTruncateToWidth by name from a copy of Malevich stale enough to
+ * predate this export needs its own guard around that import, the same way any caller of any
+ * named export from any package does; no exporting package can protect a different, already-
+ * resolved stale copy's missing binding.
+ */
+export function safeTruncateToWidth(
+	hostTruncateToWidth: unknown,
+	text: string,
+	maxWidth: number,
+	ellipsis?: string,
+	pad?: boolean,
+): string {
+	const truncated =
+		typeof hostTruncateToWidth === "function"
+			? (hostTruncateToWidth as (value: string, width: number, ellipsisArg?: string, padArg?: boolean) => string)(
+					text,
+					maxWidth,
+					ellipsis,
+					pad,
+				)
+			: text;
+	return neutralizeEmbeddedFullResets(truncated);
+}

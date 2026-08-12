@@ -1,4 +1,4 @@
-export { neutralizeEmbeddedFullResets } from "./ansi-safety.js";
+export { neutralizeEmbeddedFullResets, safeTruncateToWidth } from "./ansi-safety.js";
 export type { Component, Focusable } from "./component.js";
 export { statelessComponent } from "./component.js";
 export { Badge, type BadgeOptions, formatBadgeCount } from "./components/badge.js";
