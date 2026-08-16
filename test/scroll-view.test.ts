@@ -82,6 +82,26 @@ describe("ScrollView", () => {
 		for (const line of lines) expect(line.endsWith("█") || line.endsWith("░")).toBe(true);
 	});
 
+	it("scrollPosition() is unavailable (all zero) before the first render", () => {
+		const view = new ScrollView(fixedChild(["1", "2", "3"]), { maxHeight: 2, showScrollbar: false });
+		expect(view.scrollPosition()).toEqual({ offset: 0, total: 0, visible: 0 });
+	});
+
+	it("scrollPosition() reports offset/total/visible after a render, content within one page", () => {
+		const view = new ScrollView(fixedChild(["1", "2"]), { maxHeight: 5, showScrollbar: false });
+		view.render(80);
+		expect(view.scrollPosition()).toEqual({ offset: 0, total: 2, visible: 2 });
+	});
+
+	it("scrollPosition() reflects the current offset once scrolled into overflowing content", () => {
+		const view = new ScrollView(fixedChild(["1", "2", "3", "4", "5"]), { maxHeight: 2, showScrollbar: false });
+		view.render(80);
+		expect(view.scrollPosition()).toEqual({ offset: 0, total: 5, visible: 2 });
+		view.scrollDown(2);
+		view.render(80);
+		expect(view.scrollPosition()).toEqual({ offset: 2, total: 5, visible: 2 });
+	});
+
 	it("uses a custom KeyMatcher when provided instead of the legacy default", () => {
 		const view = new ScrollView(fixedChild(["1", "2", "3", "4", "5"]), {
 			maxHeight: 2,

@@ -20,6 +20,9 @@ export interface ScrollViewOptions {
 /** Wraps a child Component in a fixed-height, vertically scrollable viewport with an optional thumb-position scrollbar. j/k or arrow-down/up scroll one line; g/G jump to top/bottom. */
 export class ScrollView implements Component {
 	private scrollOffset = 0;
+	/** Populated by the last render() call -- meaningless (all zero) before the first one, matching this library's own "cached state only valid after a render" convention (e.g. renderedWidth elsewhere). */
+	private lastTotalLines = 0;
+	private lastVisibleLines = 0;
 	private readonly maxHeight: number;
 	private readonly showScrollbar: boolean;
 	private readonly measure: TextMeasure;
@@ -77,17 +80,25 @@ export class ScrollView implements Component {
 		}
 	}
 
+	/** The current scroll position -- only meaningful after at least one render() call; `{ offset: 0, total: 0, visible: 0 }` beforehand. Lets a wrapping component (e.g. DetailViewport) build a "X-Y/Z" scroll-position footer without re-deriving this pagination math itself. */
+	scrollPosition(): { offset: number; total: number; visible: number } {
+		return { offset: this.scrollOffset, total: this.lastTotalLines, visible: this.lastVisibleLines };
+	}
+
 	render(width: number): string[] {
 		const allLines = this.child.render(this.showScrollbar ? width - 1 : width);
 		const totalLines = allLines.length;
+		this.lastTotalLines = totalLines;
 
 		if (totalLines <= this.maxHeight) {
 			this.scrollOffset = 0;
+			this.lastVisibleLines = totalLines;
 			return this.showScrollbar ? allLines.map((l) => `${l} `) : allLines;
 		}
 
 		const maxOffset = Math.max(0, totalLines - this.maxHeight);
 		this.scrollOffset = Math.min(this.scrollOffset, maxOffset);
+		this.lastVisibleLines = this.maxHeight;
 
 		const visible = allLines.slice(this.scrollOffset, this.scrollOffset + this.maxHeight);
 

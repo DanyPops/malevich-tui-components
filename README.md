@@ -43,7 +43,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `Dialog` | A bordered title+body+action-hints dialog, dispatching to the matching action on its key. `framed: false` omits its own top/bottom rule for nesting inside a host's own already-drawn border (e.g. an Envelope). |
 | `Toast` | A single auto-dismissing message (or wrapped Component). |
 | `NotificationQueue` | A capped, auto-expiring queue of leveled (info/success/warning/error) notifications. |
-| `ScrollView` | Wraps a child in a fixed-height, vertically scrollable viewport with an optional scrollbar. |
+| `ScrollView` | Wraps a child in a fixed-height, vertically scrollable viewport with an optional scrollbar. `scrollPosition()` reports `{ offset, total, visible }` after a render, for a wrapping component's own "X-Y/Z" footer. |
+| `DetailViewport` | A bordered, titled, scrollable detail panel composing `ScrollView` + `renderFramedPanel` around caller-supplied content lines (typically `buildDetailLines`' own output) -- escape/Ctrl+C closes, arrows/j/k/g/G scroll, pageUp/pageDown scroll a full page, with an automatic "X-Y/Z" scroll-position footer. Formalizes a pattern found hand-rolled near-identically across five separate real codebases. |
 | `SplitPane` | Two children side by side, separated by a border, split by a ratio. |
 | `Collapsible` | A toggleable header that shows/hides a wrapped child. |
 | `CollapsibleText` | A collapsible block for long text, showing the first N lines behind a toggle. |
@@ -74,8 +75,8 @@ handling; components default to plain-ASCII measurement otherwise.
 | `deriveTableColumns` | Given `unknown[]`, derives `Table`-ready columns/rows when every item is a plain object: unions the keys, stringifies non-string values. Returns `undefined` for non-tabular input. |
 | `firstDistinctStyle` | Given a baseline-styled string and candidate-styled strings (in preference order), returns the first candidate that's visually distinct from the baseline, else a fallback -- the fix for a theme that maps two semantic color tokens to the same underlying color, making a more specific token look identical to plain text. |
 | `neutralizeEmbeddedFullResets` | Replaces an embedded full SGR reset (`\x1b[0m`) with a non-background reset, so a truncated inner cell's own reset can't kill an outer component's whole-line background paint. Fixes a real host `truncateToWidth` behavior (see the export's own doc comment), not a Malevich rendering choice. |
-| `renderFramedPanel` | The rule+title+content+rule scaffold shared by `Dialog`, `Menu`, and `BorderedSelectPanel` -- assembly only, callers pass already-styled/measured lines. |
-| `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `TabbedContainer`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
+| `renderFramedPanel` | The rule+title+content+rule scaffold shared by `Dialog`, `Menu`, `BorderedSelectPanel`, and `DetailViewport` -- assembly only, callers pass already-styled/measured lines. |
+| `KeyMatcher` / `legacyKeyMatcher` | Injectable named-key recognition (`matchesKey(data, keyId)`), accepted via `matchesKey` on `Board`, `TabMenu`, `TabbedContainer`, `Form`, `MaskedInput`, `Menu`, `ScrollView`, `DetailViewport`, and `Dialog` -- pass a host's real matcher (Kitty-protocol-aware) instead of the small legacy-sequences-only default. |
 | `findMnemonicConflicts` / `assertNoMnemonicConflicts` | Tree-style accelerator-key conflict detection -- given a `MnemonicContext` tree describing which key bindings are reachable together (a root's own plus whichever single child is active), reports any key bound to more than one distinct action along a path. Meant to run as a standing test assertion against a real application's own keybinding tree. |
 
 ## Rendering architecture

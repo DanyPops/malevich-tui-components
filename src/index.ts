@@ -36,6 +36,7 @@ export {
 	type DetailSectionItem,
 	type DetailViewTheme,
 } from "./components/detail-view.js";
+export { DetailViewport, type DetailViewportOptions, type DetailViewportTheme } from "./components/detail-viewport.js";
 export { Dialog, type DialogAction, type DialogOptions, type DialogTheme } from "./components/dialog.js";
 export { classifyDiffLine, type DiffLineKind, type DiffTheme, renderDiffLines } from "./components/diff.js";
 export { Envelope, type EnvelopeOptions } from "./components/envelope.js";
