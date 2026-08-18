@@ -110,4 +110,22 @@ describe("Board", () => {
 		expect(rendered).toContain("item-0");
 		expect(rendered).toContain("item-49");
 	});
+
+	it("truncates an oversized column header to that column's own width, never overflowing the requested total width", () => {
+		// A long column name (e.g. "CHANGES REQUESTED") is longer than a narrow column's own share
+		// of the total width -- the header line previously wasn't truncated the way every card
+		// line already is via renderItem's own width, breaking the render(width) contract this
+		// one line uniquely wasn't held to.
+		const wideNameColumns: BoardColumn<string>[] = [
+			{ name: "DRAFT", items: [] },
+			{ name: "OPEN", items: [] },
+			{ name: "CHANGES REQUESTED", items: [] },
+			{ name: "APPROVED", items: [] },
+			{ name: "MERGED", items: [] },
+		];
+		const board = new Board({ columns: wideNameColumns, renderItem, theme: THEME });
+		const width = 80;
+		const lines = board.render(width);
+		for (const line of lines) expect(line.length).toBeLessThanOrEqual(width);
+	});
 });

@@ -149,7 +149,11 @@ export class Board<T> implements Component {
 		theme: BoardTheme,
 		emptyLabel: string,
 	): { lines: string[]; ranges: BoardItemRange[] } {
-		const headerText = col.name ? `${col.name}: ${formatBadgeCount(col.items.length)}` : formatBadgeCount(col.items.length);
+		// Truncated to `width` before styling -- an unbounded column name (e.g. a caller's own
+		// multi-word label) previously overflowed a narrow column exactly like an untruncated card
+		// line would, breaking every consumer's own physical-line-width contract for this one line.
+		const rawHeaderText = col.name ? `${col.name}: ${formatBadgeCount(col.items.length)}` : formatBadgeCount(col.items.length);
+		const headerText = this.measure.truncateToWidth(rawHeaderText, width);
 		const lines: string[] = [theme.header(headerText), theme.border((this.opts.glyphs ?? unicodeGlyphs).line.thin.repeat(width))];
 		const ranges: BoardItemRange[] = [];
 
