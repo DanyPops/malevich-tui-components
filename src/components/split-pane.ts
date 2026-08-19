@@ -46,13 +46,21 @@ export class SplitPane implements Component {
 		return w >= targetWidth ? line : line + " ".repeat(targetWidth - w);
 	}
 
+	/** " │ " (space-border-space), not a bare border char -- a border glued directly onto both
+	 * columns' own text reads as jammed/cramped (a real, live incident: "Tasks · vehicle...│Notes 2"
+	 * with zero breathing room around the divider). Matches the common side-by-side-column
+	 * convention (e.g. `column -t`'s own separator spacing, diff tools' side-by-side view). */
+	private static readonly DIVIDER_PADDING = 1;
+
 	render(width: number): string[] {
-		if (width < this.minLeftWidth + this.minRightWidth + 1) {
+		const dividerWidth = this.borderChar.length + SplitPane.DIVIDER_PADDING * 2;
+		if (width < this.minLeftWidth + this.minRightWidth + dividerWidth) {
 			return this.left.render(width);
 		}
 
 		const leftWidth = Math.max(this.minLeftWidth, Math.floor(width * this.ratio));
-		const rightWidth = Math.max(this.minRightWidth, width - leftWidth - 1);
+		const rightWidth = Math.max(this.minRightWidth, width - leftWidth - dividerWidth);
+		const divider = `${" ".repeat(SplitPane.DIVIDER_PADDING)}${this.borderChar}${" ".repeat(SplitPane.DIVIDER_PADDING)}`;
 
 		const leftLines = this.left.render(leftWidth);
 		const rightLines = this.right.render(rightWidth);
@@ -63,7 +71,7 @@ export class SplitPane implements Component {
 		for (let i = 0; i < maxLines; i++) {
 			const l = this.padLine(leftLines[i] ?? "", leftWidth);
 			const r = this.measure.truncateToWidth(rightLines[i] ?? "", rightWidth, "…");
-			merged.push(`${l}${this.borderChar}${r}`);
+			merged.push(`${l}${divider}${r}`);
 		}
 
 		return merged;

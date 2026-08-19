@@ -14,6 +14,15 @@ describe("SplitPane", () => {
 		expect(line?.endsWith("R")).toBe(true);
 	});
 
+	it("pads the divider with a space on both sides -- never glues the border directly onto either column's own text", () => {
+		// A real, live incident: "Tasks · vehicle...│Notes 2" read as jammed/cramped with zero
+		// breathing room around the divider.
+		const pane = new SplitPane(fixedChild(["Tasks · vehicle"]), fixedChild(["Notes 2"]), { minLeftWidth: 20, minRightWidth: 20 });
+		const [line] = pane.render(60);
+		expect(line).toContain(" │ ");
+		expect(line).not.toContain("│Notes");
+	});
+
 	it("pads the shorter side to fill uneven line counts", () => {
 		const pane = new SplitPane(fixedChild(["1", "2"]), fixedChild(["a"]), { minLeftWidth: 4, minRightWidth: 4 });
 		const lines = pane.render(20);
