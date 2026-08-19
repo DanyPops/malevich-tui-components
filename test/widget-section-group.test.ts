@@ -8,33 +8,37 @@ function fixedSection(label: string, lines: readonly string[], style?: (s: strin
 }
 
 describe("renderWidgetSectionGroup", () => {
-	it("renders a single section as a stacked tree: owner as root, the section as its only child", () => {
+	it("renders the owner as a PLAIN, unconnected label -- never itself a TreeView node -- with the section as a real child branch beneath it", () => {
 		const component = renderWidgetSectionGroup({ owner: "Papyrus", sections: [fixedSection("Notes 7", [])] });
-		expect(component.render(80)).toEqual(["└── Papyrus", "    └── Notes 7"]);
+		// Matches Rich's own tree convention: a root with no branches added renders as bare text;
+		// a connector only ever points AT a child, never at the root itself.
+		expect(component.render(80)).toEqual(["Papyrus", "└── Notes 7"]);
 	});
 
-	it("stacks more than two sections as additional tree branches, not a grid", () => {
+	it("stacks more than two sections as real sibling tree branches (their own connectors relative to each other), not a grid", () => {
 		const component = renderWidgetSectionGroup({
 			owner: "Papyrus",
 			sections: [fixedSection("Tasks", ["a task"]), fixedSection("Notes 7", []), fixedSection("Discussions 2", [])],
 		});
 		const lines = component.render(80);
-		expect(lines[0]).toBe("└── Papyrus");
+		expect(lines[0]).toBe("Papyrus");
 		expect(lines.some((line) => line.includes("Tasks"))).toBe(true);
 		expect(lines.some((line) => line.includes("Notes 7"))).toBe(true);
 		expect(lines.some((line) => line.includes("Discussions 2"))).toBe(true);
 		expect(lines.some((line) => line.includes("a task"))).toBe(true);
+		// Real siblings get real connectors relative to each other: the first two use the
+		// mid-branch glyph, only the last uses the corner.
+		expect(lines.some((line) => line.startsWith("├── "))).toBe(true);
+		expect(lines.some((line) => line.startsWith("└── "))).toBe(true);
 	});
 
 	it("embeds each section's own body lines indented beneath its own branch", () => {
 		const component = renderWidgetSectionGroup({ owner: "Papyrus", sections: [fixedSection("Tasks", ["▶ task one", "  task two"])] });
 		const lines = component.render(80);
-		expect(lines[0]).toBe("└── Papyrus");
-		expect(lines[1]).toBe("    └── Tasks");
+		expect(lines[0]).toBe("Papyrus");
+		expect(lines[1]).toBe("└── Tasks");
 		expect(lines[2]?.trim()).toBe("▶ task one");
 		expect(lines[3]?.trim()).toBe("task two");
-		// Each subsequent line indents at least as deep as the section's own branch.
-		expect(lines[2]?.startsWith(" ".repeat(6))).toBe(true);
 	});
 
 	it("stacks two sections vertically when the viewport is too narrow for two columns", () => {
@@ -44,7 +48,7 @@ describe("renderWidgetSectionGroup", () => {
 			minColumnWidth: 30,
 		});
 		const lines = component.render(40); // < 2*30+1
-		expect(lines[0]).toBe("└── Papyrus");
+		expect(lines[0]).toBe("Papyrus");
 		expect(lines.length).toBeGreaterThan(1);
 	});
 
@@ -85,9 +89,11 @@ describe("renderWidgetSectionGroup", () => {
 		expect(seen[0]).toBeGreaterThan(seen[1]!);
 	});
 
-	it("never renders a grid for a single section, regardless of width", () => {
+	it("never renders a grid for a single section, regardless of width -- and its owner line carries no connector", () => {
 		const component = renderWidgetSectionGroup({ owner: "Pipes", sections: [fixedSection("Jobs · 3 subscribed", ["job one"])] });
-		expect(component.render(200)[0]).toBe("└── Pipes");
+		const lines = component.render(200);
+		expect(lines[0]).toBe("Pipes");
+		expect(lines[1]).toBe("└── Jobs · 3 subscribed");
 	});
 
 	it("applies each section's own style function to its branch label (whole styled branch line, matching TreeView's own convention)", () => {
@@ -96,20 +102,27 @@ describe("renderWidgetSectionGroup", () => {
 			sections: [fixedSection("Notes", [], (s) => `<label>${s}</label>`)],
 		});
 		const lines = component.render(80);
-		expect(lines[0]).toContain("Papyrus");
+		expect(lines[0]).toBe("Papyrus");
 		expect(lines[1]).toStartWith("<label>");
 		expect(lines[1]).toContain("Notes");
 		expect(lines[1]).toEndWith("</label>");
 	});
 
-	it("applies ownerStyle to the shared header line in the two-column grid layout", () => {
-		const component = renderWidgetSectionGroup({
+	it("applies ownerStyle to the owner's own plain label line, in both layouts", () => {
+		const stacked = renderWidgetSectionGroup({
+			owner: "Papyrus",
+			ownerStyle: (s) => `<owner>${s}</owner>`,
+			sections: [fixedSection("Notes", [])],
+		});
+		expect(stacked.render(80)[0]).toBe("<owner>Papyrus</owner>");
+
+		const grid = renderWidgetSectionGroup({
 			owner: "Papyrus",
 			ownerStyle: (s) => `<owner>${s}</owner>`,
 			sections: [fixedSection("Tasks", []), fixedSection("Notes", [])],
 			minColumnWidth: 10,
 		});
-		expect(component.render(80)[0]).toBe("<owner>Papyrus</owner>");
+		expect(grid.render(80)[0]).toBe("<owner>Papyrus</owner>");
 	});
 
 	it("truncates the owner header line and each section's own branch/column-header label, in both layouts, to the given width", () => {

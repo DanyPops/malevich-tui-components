@@ -7,6 +7,14 @@
  * otherwise, and for any section count other than two (a grid beyond two columns is real future
  * work, not needed by any current adopter).
  *
+ * The owner is rendered as a PLAIN, unconnected label line, never as a TreeView node of its own --
+ * matching how every real tree-drawing tool treats its root (Rich's own docs: a Tree with no
+ * branches added renders as bare text; a connector only ever points AT a child, never at the root
+ * itself). Sections are TreeView's own top-level nodes, so they get real `└──`/`├──` connectors
+ * relative to EACH OTHER, the same as any other tree's real children -- a real, live incident:
+ * treating the owner as a TreeView node of its own produced `└── Papyrus` / `    └── Notes 7`,
+ * implying Papyrus was itself some outer root's own lone child, which it never is.
+ *
  * Each section supplies its own `render(width)`, not pre-computed lines: this group calls it with
  * whatever width that section actually gets in the CHOSEN layout -- the full viewport when
  * stacked, half of it (minus the border) in a two-column grid -- so a section's own truncation is
@@ -68,18 +76,20 @@ function columnComponent(section: WidgetSection, measure: TextMeasure): Componen
  */
 export function renderWidgetSectionGroup(options: WidgetSectionGroupOptions): Component {
 	const { owner, sections, ownerStyle = (s: string) => s, measure = asciiTextMeasure, glyphs, minColumnWidth = 30 } = options;
-	const treeNodes: TreeNode[] = [
-		{
-			label: owner,
-			style: ownerStyle,
-			children: sections.map((section) => ({
-				label: section.label,
-				style: section.style,
-				component: sectionComponent(section),
-			})),
+	const treeNodes: TreeNode[] = sections.map((section) => ({
+		label: section.label,
+		style: section.style,
+		component: sectionComponent(section),
+	}));
+	const childTree = new TreeView({ nodes: treeNodes, measure, glyphs });
+	const stacked: Component = {
+		render(width: number): string[] {
+			return [measure.truncateToWidth(ownerStyle(owner), width), ...childTree.render(width)];
 		},
-	];
-	const stacked = new TreeView({ nodes: treeNodes, measure, glyphs });
+		invalidate(): void {
+			childTree.invalidate();
+		},
+	};
 	if (sections.length !== 2) return stacked;
 	const [first, second] = sections as [WidgetSection, WidgetSection];
 	const pane = new SplitPane(columnComponent(first, measure), columnComponent(second, measure), {
