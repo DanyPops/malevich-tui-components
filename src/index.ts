@@ -1,4 +1,5 @@
 export { neutralizeEmbeddedFullResets, safeTruncateToWidth } from "./ansi-safety.js";
+export { AutoRotatingWindow, type AutoRotatingWindowOptions } from "./auto-rotating-window.js";
 export type { Component, Focusable } from "./component.js";
 export { statelessComponent } from "./component.js";
 export { Badge, type BadgeOptions, formatBadgeCount } from "./components/badge.js";
@@ -14,6 +15,7 @@ export { BorderedSelectPanel, type BorderedSelectPanelOptions, type BorderedSele
 export { BoundedTable, type BoundedTableOptions, renderBoundedTable } from "./components/bounded-table.js";
 export type { BoxBorderStyle } from "./components/box.js";
 export { Card, type CardOptions, type CardTheme } from "./components/card.js";
+export { type CardRowOptions, type CardRowSpec, renderCardRow } from "./components/card-row.js";
 export { Chip, type ChipFormatOptions, type ChipOptions, type ChipShape, formatChip } from "./components/chip.js";
 export { Collapsible, type CollapsibleOptions } from "./components/collapsible.js";
 export { CollapsibleText, type CollapsibleTextOptions } from "./components/collapsible-text.js";
