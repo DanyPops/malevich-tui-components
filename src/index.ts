@@ -91,6 +91,11 @@ export { Toast, type ToastOptions, type ToastScheduler, type ToastTheme } from "
 export { type TreeNode, TreeView, type TreeViewOptions } from "./components/tree-view.js";
 export { renderTruncatedList, type TruncatedListOptions } from "./components/truncated-list.js";
 export {
+	renderWidgetSectionGroup,
+	type WidgetSection,
+	type WidgetSectionGroupOptions,
+} from "./components/widget-section-group.js";
+export {
 	asciiGlyphs,
 	type BoxGlyphs,
 	type GlyphSet,
