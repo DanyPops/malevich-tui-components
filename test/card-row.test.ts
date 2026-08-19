@@ -98,8 +98,8 @@ describe("renderCardRow", () => {
 		for (const line of lines) expect(visibleWidth(line)).toBeLessThanOrEqual(60);
 	});
 
-	it("applies frameStyle to the border and labelStyle to each card's own label text", () => {
-		const spec: CardRowSpec = { label: "Styled", render: () => ["body"], labelStyle: (s) => `<label>${s}</label>` };
+	it("applies frameStyle to the border and each card's own style to its label text (reusing WidgetSection.style)", () => {
+		const spec: CardRowSpec = { label: "Styled", render: () => ["body"], style: (s) => `<label>${s}</label>` };
 		const lines = renderCardRow([spec], 80, { frameStyle: (s) => `<frame>${s}</frame>` });
 		expect(lines[0]).toContain("<label>Styled</label>");
 		expect(lines[0]).toContain("<frame>");

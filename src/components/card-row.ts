@@ -15,16 +15,12 @@
  */
 import { asciiTextMeasure, type TextMeasure } from "../text-measure.js";
 import { type BoxBorderStyle, renderBox } from "./box.js";
+import type { WidgetSection } from "./widget-section-group.js";
 
-export interface CardRowSpec {
-	/** This card's own top-border label, e.g. "Papyrus · Tasks". */
-	label: string;
-	/** Renders this card's own body lines for the width it's actually given in the row it lands
-	 * in -- already net of the border and interior content padding this function reserves. */
-	render: (width: number) => string[];
-	/** Styles the label text only, not the surrounding border dashes. */
-	labelStyle?: (s: string) => string;
-}
+/** Reuses WidgetSection as-is (label/render/style) -- exactly the shape a card needs, and the
+ * same data TaskOverlay/NoteOverlay already build for the prior renderWidgetSectionGroup layout,
+ * so adopting CardRow needs no change to how a caller's own sections are constructed. */
+export type CardRowSpec = WidgetSection;
 
 export interface CardRowOptions {
 	measure?: TextMeasure;
@@ -79,7 +75,7 @@ export function renderCardRow(specs: readonly CardRowSpec[], width: number, opti
 			const raw = rendered[i]!;
 			const padded = [...raw, ...Array(Math.max(0, bodyHeight - raw.length)).fill("")];
 			const lines = padded.map((line) => (line ? `${" ".repeat(CONTENT_PADDING)}${line}` : ""));
-			const label = spec.labelStyle ? spec.labelStyle(spec.label) : spec.label;
+			const label = spec.style ? spec.style(spec.label) : spec.label;
 			return renderBox({
 				width: colWidths[i]!,
 				lines,
